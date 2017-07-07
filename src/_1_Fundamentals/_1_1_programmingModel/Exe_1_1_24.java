@@ -8,10 +8,11 @@ import edu.princeton.cs.algs4.StdOut;
         */
 public class Exe_1_1_24 {
     public static void main(String[] args){
-        StdOut.println(euclid(1071,462));
+        StdOut.println(euclid(42344,234234));
     }
-    // a > b
+    // 欧几里得算法
     public static int euclid(int a, int b){
+        StdOut.println("a="+a+"; b="+b);
         if (b == 0) return a;
         return euclid(b, a%b);
     }
