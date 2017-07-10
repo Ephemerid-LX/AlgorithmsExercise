@@ -12,7 +12,9 @@ import java.util.Scanner;
 public class Exc_1_1_11 {
     public static void main(String[] args){
         Scanner in = new Scanner(System.in);
+        StdOut.println("请输入行数：");
         int row = in.nextInt();
+        StdOut.println("请输入列数：");
         int line = in.nextInt();
         boolean[][] array = getBooleanTwoDimensionalArray(row,line);
         String s = " ";
@@ -32,6 +34,7 @@ public class Exc_1_1_11 {
         }
 
         StdOut.println(s);
+        in.close();
     }
 
 

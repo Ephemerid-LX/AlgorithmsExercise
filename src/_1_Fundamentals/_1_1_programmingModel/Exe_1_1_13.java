@@ -11,7 +11,9 @@ import java.util.Scanner;
 public class Exe_1_1_13 {
     public static void main(String[] args){
         Scanner in = new Scanner(System.in);
+        StdOut.println("请输入行数：");
         int row = in.nextInt();
+        StdOut.println("请输入列数：");
         int line = in.nextInt();
         int[][] array = getIntTwoDimensionalArray(row,line);
         //转置数组

@@ -409,3 +409,245 @@ public class Exe_1_1_21 {
 }
 
 ```
+
+### 1.1.24
+```java
+import edu.princeton.cs.algs4.StdOut;
+
+/**
+ * exercise 1.1.24
+ * 欧几里得算法（Euclidean algorithm，辗转相除法）
+        */
+public class Exe_1_1_24 {
+    public static void main(String[] args){
+        StdOut.println(euclid(1111111,1234567));
+    }
+    // 欧几里得算法
+    public static int euclid(int a, int b){
+        StdOut.println("a="+a+"; b="+b);
+        if (b == 0) return a;
+        return euclid(b, a%b);
+    }
+}
+```
+1111111与1234567互素
+
+### 1.1.25
+
+
+## 提高题
+### 1.1.26
+每次都交换两个元素
+
+### 1.1.27
+
+### 1.1.28
+```java
+import edu.princeton.cs.algs4.BinarySearch;
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdOut;
+import java.util.Arrays;
+
+/**
+ * exercise 1.1.28
+ * 没有使用List等对象
+ */
+public class Exe_1_1_28 {
+    public static void main(String[] args) {
+
+        // 读取文件
+        In in = new In("src/_1_Fundamentals/_1_1_programmingModel/exe_1_1_28.txt");
+        int[] whitelist = in.readAllInts();
+
+        // sort the array
+        Arrays.sort(whitelist);
+
+        //
+        int[] unduplicated = new int[whitelist.length], tmp = new int[0];
+        int index = 0;
+
+        //下标数组,临时下标数组
+        int[] allIndex = new int[0], indexTmp;
+
+        for (int i = 0; i < whitelist.length; i++) {
+            //如果在下标数组中存在，则跳过
+            if (BinarySearch.indexOf(allIndex, i) != -1) continue;
+
+            int[] indexes = indexOf(whitelist, whitelist[i]);
+            if (indexes.length > 1) {
+                //将查到的下标添加到下标数组中
+                indexTmp = new int[allIndex.length + indexes.length];
+                for (int j = 0; j < allIndex.length; j++) indexTmp[j] = allIndex[j];
+                for (int p = indexes.length; p > 1; p--) indexTmp[indexTmp.length - p] = indexes[indexes.length - p + 1];
+                allIndex = indexTmp;
+                Arrays.sort(allIndex);
+            }
+            //将不重复的数组添加
+            unduplicated[index++] = whitelist[i];
+        }
+
+        if (index < whitelist.length) {
+            //缩小删除后数组容量
+            for (int i = 0; i < index; i++) {
+                tmp = new int[index];
+                tmp[i] = unduplicated[i];
+                StdOut.println(unduplicated[i]);
+            }
+            unduplicated = tmp;
+        }
+    }
+
+    /**
+     * 二分法无法查找如{1,1,1,1,1}这样就有多个重复元素的index
+     *
+     * 将不会返回第一次出现该值下下标
+     * @param a 数组
+     * @param key 需要查找的值
+     * @return 具有想同值的下标
+     */
+    public static int[] indexOf(int[] a, int key){
+        int[] indexes = new int[0], tmp;
+        for(int i = 0; i < a.length; i++){
+            if (key == a[i]) {
+                tmp = new int[indexes.length+1];
+                for (int j = 0; j < indexes.length; j++) {
+                    tmp[j] = indexes[j];
+                }
+                tmp[indexes.length] = i;
+                indexes = tmp;
+                tmp = null;
+            }
+        }
+        return indexes;
+    }
+}
+```
+
+### 1.1.29
+```java
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdOut;
+
+import java.util.Arrays;
+
+/**
+ * exercise 1.1.29
+ */
+public class Exe_1_1_29 {
+    public static void main(String[] args){
+        // 读取文件
+        In in = new In("src/_1_Fundamentals/_1_1_programmingModel/exe_1_1_29.txt");
+        int[] whitelist = in.readAllInts();
+
+        // sort the array
+        Arrays.sort(whitelist);
+        int i = rank(4, whitelist);
+        int j = count(4, whitelist);
+
+        for (int n = i; n <= i + j - 1; n++) {
+            StdOut.println(whitelist[n]);
+        }
+    }
+
+    /**
+     * 返回等于该键的元素的数量
+     * @param key 键
+     * @param a 数组
+     * @return 等于该键的元素的数量
+     */
+    public static int count(int key, int[] a){
+        return Exe_1_1_28.indexOf(a,key).length;
+    }
+
+    /**
+     * 返回数组中小于该键的元素数量
+     * @param key 键
+     * @param a 数组
+     * @return 小于该键的元素数量
+     */
+    public static int rank(int key, int[] a){
+        int[] count = Exe_1_1_28.indexOf(a, key);
+        if (count.length == 0) return 0;
+        return count[0];
+    }
+}
+```
+
+### 1.1.30
+```java
+import edu.princeton.cs.algs4.StdOut;
+
+/**
+ * exercise1.1.30
+ */
+public class Exe_1_1_30 {
+    public static void main(String[] args){
+        boolean[][] array = new boolean[5][5];
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array[i].length; j++) {
+                array[i][j] = Exe_1_1_24.euclid(i ,j) == 1 ? true : false;
+                StdOut.printf("%-8s", array[i][j]);
+            }
+            StdOut.println();
+        }
+    }
+}
+```
+
+### 1.1.31
++ 圆上任意一点的坐标:  
+  x = x0 + r*cos(θ);
+  y = y0 + r*sin(θ);
++ θ计算:  
+  θ = 2π*(i/N) = π*(a°)/(180°)
+
+```java
+import edu.princeton.cs.algs4.StdDraw;
+import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
+
+import java.util.Scanner;
+
+/**
+ * exercise 1.1.31
+ */
+public class Exe_1_1_31 {
+    public static void main(String[] args){
+        Scanner in = new Scanner(System.in);
+        StdOut.println("请输入需要点的个数：");
+        int N = in.nextInt();
+        StdOut.println("请输入概率(0~1):");
+        double p = in.nextDouble();
+
+        draw(N,p);
+        in.close();
+    }
+
+    public static void draw(int N, double p){
+        StdDraw.setCanvasSize(1024,1024);
+        StdDraw.setScale(-1.1,1.1);
+        StdDraw.setPenRadius(0.05);
+        //画点
+        double[][] coordinate = new double[N][2];
+        for (int i = 0; i < N; i++) {
+            coordinate[i][0] = Math.cos(2*Math.PI*i/N);
+            coordinate[i][1] = Math.sin(2*Math.PI*i/N);
+            StdDraw.point(coordinate[i][0], coordinate[i][1]);
+        }
+        StdDraw.setPenRadius(0.005);
+        StdDraw.setPenColor(StdDraw.GRAY);
+        //画线
+        for (int i = 0; i < N; i++) {
+            for (int j = i+1; j < N; j++) {
+                if (StdRandom.bernoulli(p)) {
+                    StdDraw.line(
+                            coordinate[i][0],coordinate[i][1],
+                            coordinate[j][0],coordinate[j][1]
+                    );
+                }
+            }
+        }
+
+    }
+}
+```
