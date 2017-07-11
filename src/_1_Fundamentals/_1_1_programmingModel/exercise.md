@@ -4,7 +4,7 @@ a|b|c
 7|-|true
 
 ### 1.1.2
-a           |b|c|d
+a|b|c|d
 -|-|-|-
 1.61(double)|10.0(double)|true(boolean)|33(String)
 
@@ -648,6 +648,247 @@ public class Exe_1_1_31 {
             }
         }
 
+    }
+}
+```
+### 1.1.32
++ 统计分布
++ 计算每个矩形中心坐标
+
+```java
+import edu.princeton.cs.algs4.StdDraw;
+import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdStats;
+
+/**
+ * exercise 1.1.32
+ */
+public class Exe_1_1_32 {
+    public static void main(String[] args){
+        int N = Integer.parseInt(args[0]);
+        double l = Double.parseDouble(args[1]);
+        double r = Double.parseDouble(args[2]);
+        double[] a = StdIn.readAllDoubles();
+
+        draw(N, l, r, a);
+    }
+
+    public static void draw (int N, double l, double r, double[] a){
+        double withd = (r-l)/N;
+        int[] statistics =new int[N];
+
+        // 统计区分分布
+        // 用需要统计的值 除以宽 取商(商是整数)
+        for (int i = 0; i < a.length; i++) {
+            if (a[i] <= l || a[i] >= r ) continue;
+            int index = (int)((a[i] - l)/withd);
+            statistics[index] += 1;
+        }
+        // setCanvasSize必须在之前设置，不然图像显示不出来
+        StdDraw.setCanvasSize(1024, 512);
+        StdDraw.setXscale(l, r);
+        StdDraw.setYscale(0, StdStats.max(statistics));
+
+        // 计算每个矩形中心坐标点
+        for (int i = 0; i < N; i++) {
+            double x = l + (i+0.5)* withd;
+            double y = statistics[i]/2.0;
+            StdOut.println(x+","+y);
+            StdDraw.filledRectangle(x, y, withd/2.0, statistics[i]/2.0);
+        }
+    }
+}
+```
+
+### 1.1.35
+```java
+import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
+
+/**
+ * exercise 1.1.35
+ */
+public class Exe_1_1_35 {
+    private static final int SIDES = 6;
+    private static final double[] standard = standardProbabilityDistribution();
+
+    public static void main(String[] args){
+        StdOut.println(minN());
+    }
+
+    /**
+     * 获得标准分布概率
+     * @return 标准分布概率
+     */
+    public static double[] standardProbabilityDistribution(){
+        double[] dist = new double[2 * SIDES + 1];
+        for (int i = 1; i <= SIDES; i++) {
+            for (int j = 1; j <= SIDES; j++) {
+                dist[i+j] += 1.0;
+            }
+        }
+
+        for (int k = 2; k <= 2*SIDES; k++) {
+            dist[k] /= 36.0;
+        }
+        return dist;
+    }
+
+    /**
+     * 获得实验分布概率
+     * @param N 实验次数
+     * @return 实验分布概率
+     */
+    public static double[] experimentalData(int N){
+        double[] dist = new double[2*SIDES+1];
+        for (int l = 0; l < N; l++) {
+            int i = StdRandom.uniform(1,7);
+            int j = StdRandom.uniform(1,7);
+            dist[i+j] += 1.0;
+        }
+        for (int k = 2; k <= 2*SIDES; k++) {
+            dist[k] /= N;
+        }
+        return dist;
+    }
+
+    /**
+     * 求最小N,保证实验数据与准确数据吻合程度到达小数点后三位
+     * 需要注意的是,
+     *  实验具是随机性的,所以每次实验的结果可能不一样
+     * @return 最小N
+     */
+    public static int minN(){
+        int N = 0;
+        int equalsTimes = 2;
+        while (equalsTimes != 13) {
+            N++;
+            equalsTimes = 2;
+            double[] experimental = experimentalData(N);
+
+            for (int k = 2; k <= 2 * SIDES; k++) {
+                int point = -1;
+                //这部分的值是固定的，可以提出来
+                String s = String.format("%.5f", standard[k]);
+                point = s.indexOf(".");
+                String subS = s.substring(0, point + 4);
+
+                String e = String.format("%.5f", experimental[k]);
+                point = e.indexOf(".");
+                String subE = e.substring(0, point + 4);
+                if (subS.equals(subE)) equalsTimes++;
+
+                StdOut.printf("%-10s", subS);
+                StdOut.printf("%-10s", subE);
+                StdOut.println();
+            }
+            StdOut.println("===================================");
+        }
+        return N;
+    }
+}
+```
+
+### 1.1.36 && 1.1.37
+```java
+import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
+
+/**
+ * exercise 1.1.36 && 1.1.37
+ */
+public class ShuffleTest {
+    public static void main(String[] args){
+        StdOut.println("请输入整数M:");
+        int M = StdIn.readInt();
+        StdOut.println("请输入整数N:");
+        int N = StdIn.readInt();
+        printShuffle(M,N);
+        printShuffle2(M,N);
+    }
+
+    /**
+     * 1.1.36
+     * @param M 数组大小
+     * @param N 乱序次数
+     */
+    public static void printShuffle(int M, int N) {
+        int[] a = new int[M];
+        int[][] b = new int[M][M];
+        int[][] c = new int[M][M];
+        for (int k = 0; k < N; k++) {
+
+            for (int l = 0; l < M; l++) {
+                a[l] = l;
+            }
+
+            StdRandom.shuffle(a);
+
+            // todo
+            //此处的两种形式如何理解
+            //两种结果只是产生互为转置矩阵的结果
+            for (int i = 0; i < M; i++) {
+                //
+                b[i][indexOf(a, i)]++;
+                //
+                c[i][a[i]]++;
+            }
+        }
+
+        for (int i = 0; i < M; i++) {
+            for (int j = 0; j < M; j++)
+                StdOut.printf("%-10d", b[i][j]);
+            StdOut.println();
+        }
+        StdOut.println();
+
+        for (int i = 0; i < M; i++) {
+            for (int j = 0; j < M; j++)
+                StdOut.printf("%-10d", c[i][j]);
+            StdOut.println();
+        }
+        StdOut.println();
+    }
+
+    /**
+     * 1.1.37
+     * @param M 数组大小
+     * @param N 乱序次数
+     */
+    public static void printShuffle2(int M, int N) {
+        int[] a = new int[M];
+        int[][] b = new int[M][M];
+        for (int k = 0; k < N; k++) {
+
+            for (int l = 0; l < M; l++) {
+                a[l] = l;
+            }
+
+            for (int j = 0; j < M; j++) {
+                int r = StdRandom.uniform(M);     // [0,M-1)
+                int temp = a[j];
+                a[j] = a[r];
+                a[r] = temp;
+            }
+            for (int i = 0; i < M; i++) {
+                b[i][indexOf(a, i)]++;
+            }
+        }
+
+        for (int i = 0; i < M; i++) {
+            for (int j = 0; j < M; j++)
+                StdOut.printf("%-10d", b[i][j]);
+            StdOut.println();
+        }
+    }
+
+    public static int indexOf(int[]a ,int key){
+        for (int i = 0; i < a.length; i++) {
+            if (a[i] == key) return i;
+        }
+        return -1;
     }
 }
 ```
