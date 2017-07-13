@@ -1,7 +1,6 @@
 package _1_Fundamentals._1_3_BagQueuesAndStacks;
 
 import edu.princeton.cs.algs4.Stack;
-import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 
 import java.util.Scanner;
