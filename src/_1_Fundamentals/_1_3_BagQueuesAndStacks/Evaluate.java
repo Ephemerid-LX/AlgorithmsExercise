@@ -9,6 +9,8 @@ import java.util.Scanner;
  * Dijikstra 的双栈算数表达式求值算法
  * 官方用例在:
  *      lib\someSolutionCode\
+ * 使用限制：
+ *      每一步都必须用()显示的括起来
  */
 public class Evaluate {
     public static void main(String[] args){
