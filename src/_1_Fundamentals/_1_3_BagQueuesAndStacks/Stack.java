@@ -4,11 +4,14 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 /**
  * 算法1.2
  *      链表实现Stack
  */
-public class Stack<Item> {
+public class Stack<Item> implements Iterable<Item> {
     private Node first;//栈顶
     private int n;//结点个数
 
@@ -48,6 +51,27 @@ public class Stack<Item> {
         return first.item;
     }
 
+    @Override
+    public Iterator<Item> iterator() {
+        return null;
+    }
+
+    private class ListIterator implements Iterator<Item> {
+        Node current = first;
+
+        @Override
+        public boolean hasNext() {
+            return first == null;
+        }
+
+        @Override
+        public Item next() {
+            if (isEmpty()) throw new NoSuchElementException();
+            Item item = current.item;
+            current = current.next;
+            return item;
+        }
+    }
 
 //    // 测试代码
 //    public static void main(String[] args){
