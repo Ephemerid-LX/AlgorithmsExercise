@@ -122,3 +122,12 @@ public class QuickUnionUF {
 
 ### 1.5.10
 正确，但是，相当于链接到子节点，增加了树的深度。
+
+## creative problems
+### 1.5.12
+后半的题目不太理解。  
+`todo`
+
+### 1.5.13
+后半的题目不太理解。  
+`todo`
