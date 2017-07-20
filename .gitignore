@@ -3,7 +3,15 @@
 *.iml
 
 # algs4-data
-algs4-data/
+# too big
+algs4-data/leipzig1M.txt
+algs4-data/UPC.csv
+algs4-data/largeUF.txt
+algs4-data/largeT.txt
+algs4-data/largeW.txt
+algs4-data/movies.txt
+algs4-data/mobydick.txt
+algs4-data/DJIA.csv
 
 # class
 out/
