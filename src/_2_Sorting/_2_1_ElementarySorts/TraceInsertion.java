@@ -7,6 +7,9 @@ import java.awt.*;
 /**
  * creative problem 2.1.18
  * 可视轨迹的Insertion 算法
+ *
+ * args:
+ *    [String-需要排序的字符串] 例如：SORTEXAMPLE
  */
 public class TraceInsertion {
     public static void sort(String[] a){
@@ -41,14 +44,25 @@ public class TraceInsertion {
         return v.compareTo(w) < 0;
     }
 
+    /**
+     *
+     * @param a 当前数组
+     * @param row 当前数组下标
+     * @param ith 交换数组下标
+     * @param jth 交换下标
+     */
     private static void draw(String[] a, int row, int ith, int jth){
         StdDraw.setPenColor(StdDraw.BLACK);
         StdDraw.text(-2.50, row, ith + "");
         StdDraw.text(-1.25, row, jth + "");
         for (int i = 0; i < a.length; i++) {
+            // 将交换后的位置标红
             if (i == jth) StdDraw.setPenColor(StdDraw.BOOK_RED);
+            // 将i 之后的字体颜色变为灰色
             else if (i > ith) StdDraw.setPenColor(StdDraw.LIGHT_GRAY);
+            // 将j 之前的字体颜色变为灰色
             else if (i < jth) StdDraw.setPenColor(StdDraw.LIGHT_GRAY);
+            // 被比较的位置标为黑色
             else StdDraw.setPenColor(StdDraw.BLACK);
             StdDraw.text(i, row, a[i]);
         }
