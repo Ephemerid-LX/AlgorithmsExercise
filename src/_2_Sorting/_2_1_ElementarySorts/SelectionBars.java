@@ -5,6 +5,9 @@ import edu.princeton.cs.algs4.StdRandom;
 
 /**
  * 绘制 选择算法 棒状轨迹
+ *
+ * 参数: 数组大小
+ *  如: args[0] = 20;
  */
 public class SelectionBars {
     public static void sort(Double[] a){
@@ -19,7 +22,7 @@ public class SelectionBars {
     }
 
     public static void show(Double[] a, int i, int min){
-        StdDraw.setYscale(-a.length+i+1, i);
+        StdDraw.setYscale(-a.length+i+1, i+1);
         StdDraw.setPenColor(StdDraw.LIGHT_GRAY);
         for (int k = 0; k < i; k++)
             StdDraw.line(k, 0, k, a[k] * 0.6);

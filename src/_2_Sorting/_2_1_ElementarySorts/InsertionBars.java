@@ -5,6 +5,9 @@ import edu.princeton.cs.algs4.StdRandom;
 
 /**
  * 绘制 插入算法 的棒状轨迹
+ *
+ * 参数: 数组大小
+ *  如: args[0] = 20;
  */
 public class InsertionBars {
 
@@ -32,18 +35,18 @@ public class InsertionBars {
 
     private static void show(double[] a, int i, int j){
         // 这个纵坐标为什么这样设定
-        // todo
-        StdDraw.setYscale(-a.length + i + 1, i);
+        // 每次设置是为了让坐标轴平移
+        StdDraw.setYscale(-a.length + i + 1, i+1);
         StdDraw.setPenColor(StdDraw.LIGHT_GRAY);
         for (int k = 0; k < i; k ++)
-            StdDraw.line(k,0, k, a[i] * 0.6);
+            StdDraw.line(k,0, k, a[k] * 0.6);
         StdDraw.setPenColor(StdDraw.BOOK_RED);
         StdDraw.line(j, 0, j, a[j]*0.6);
         StdDraw.setPenColor(StdDraw.BLACK);
         for (int k = j+1; k <= i; k++)
             StdDraw.line(k, 0,k ,a[k] * 0.6);
         StdDraw.setPenColor(StdDraw.LIGHT_GRAY);
-        for (int k = i+i; k < a.length; k++)
+        for (int k = i+1; k < a.length; k++)
             StdDraw.line(k, 0, k, a[k]);
     }
 
