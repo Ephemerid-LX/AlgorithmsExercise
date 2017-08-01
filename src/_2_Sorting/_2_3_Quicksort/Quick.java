@@ -37,10 +37,10 @@ public class Quick {
         int j = hi + 1; //指针，从右往左扫描
         Comparable v = a[lo]; //切分元素
         while (true) {
-            // 寻找小于 v 的元素，记下i
+            // 寻找大于等于 v 的元素，记下i
             while (less(a[++i], v))
                 if (i == hi) break;
-            // 寻找大于 v 的元素，记下j
+            // 寻找小于等于 v 的元素，记下j
             while (less(v, a[--j]))
                 if (j == lo) break;
             // i和j相遇后跳出循环
