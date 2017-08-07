@@ -20,8 +20,6 @@ public class IndexMaxPQ<Key extends Comparable<Key>> implements Iterable<Integer
     private int[] qp;   // inverse of pq - qp[pq[i]] = pq[qp[i]] = i
     private Key[] keys; // keys[i] = priority of i
 
-
-
     public IndexMaxPQ(int maxN){
         if (maxN < 0) throw new IllegalArgumentException();
         n = 0;
@@ -152,7 +150,7 @@ public class IndexMaxPQ<Key extends Comparable<Key>> implements Iterable<Integer
         swim(index);
         sink(index);
         keys[i] = null;
-        pq[i] = -1;
+        qp[i] = -1;
     }
 
     /***************************************************************************
