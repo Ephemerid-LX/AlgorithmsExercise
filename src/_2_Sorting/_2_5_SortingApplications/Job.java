@@ -13,6 +13,10 @@ public class Job implements Comparable<Job>{
         this.time = time;
     }
 
+    public double getTime(){
+        return time;
+    }
+
     @Override
     public int compareTo(Job that) {
         if (this.time < that.time) return -1;

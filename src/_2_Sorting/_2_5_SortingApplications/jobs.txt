@@ -1,0 +1,6 @@
+5
+cooking 60
+homework 30
+reading 90
+running 35
+talking 20

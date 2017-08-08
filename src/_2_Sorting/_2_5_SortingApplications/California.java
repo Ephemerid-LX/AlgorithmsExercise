@@ -1,0 +1,76 @@
+package _2_Sorting._2_5_SortingApplications;
+
+
+import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
+
+import java.util.Arrays;
+import java.util.Comparator;
+
+/******************************************************************************
+ *  Compilation:  javac California.java
+ *  Execution:    java California
+ *  Dependencies: StdOut.java StdIn.java
+ *
+ *  Sort names according to alphabet used in California runoff election.
+ *
+ *      R W Q O J M V A H B S G Z X N T C I E K U P D Y F L
+ *
+ *  Treats other characters as less than any uppercase letter
+ *
+ *
+ *  % java California < california-gov.txt
+ *  ROBERT "BUTCH" DOLE
+ *  ROBERT C. MANNHEIM
+ *  ROBERT C. NEWMAN II
+ *  ROBERT CULLENBINE
+ *  RONALD J. FRIEDMAN
+ *  RONALD JASON PALMIERI
+ *  RANDALL D. SPRAGUE
+ *  RALPH A. HERNANDEZ
+ *  RICH GOSSE
+ *  RICHARD J. SIMMONS
+ *  REVA RENEE RENZ
+ *  WARREN FARRELL
+ *  WILLIAM "BILL" S. CHAMBERS
+ *  ...
+ *  LAWRENCE STEVEN STRAUSS
+ *  LINGEL H. WINTERS
+ *  LEO GALLAGHER
+ *  LEONARD PADILLA
+ *
+ ******************************************************************************
+ *
+ * creative problem 2.5.16
+ *
+ */
+public class California {
+
+    public static final Comparator<String> CANDIDATE_ORDER = new CandidateComparator();
+
+    private static class CandidateComparator implements Comparator<String>{
+        private static String order = "RWQOJMVAHBSGZXNTCIEKUPDYFL";
+        @Override
+        public int compare(String a, String b) {
+            String tempa = a.toUpperCase();
+            String tempb = b.toUpperCase();
+            int n = Math.min(a.length(), b.length());
+            for (int i = 0; i < n; i++){
+                int aindex = order.indexOf(tempa.charAt(i));
+                int bindex = order.indexOf(tempb.charAt(i));
+                if (aindex < bindex) return -1;
+                else if (aindex > bindex) return 1;
+            }
+            return a.length() - b.length();
+        }
+    }
+
+    // test
+    public static void main(String[] args){
+        String[] candidates = StdIn.readAll().split("\\n+");
+        int n = candidates.length;
+        Arrays.sort(candidates, CANDIDATE_ORDER);
+        for (int i = 0; i < n; i++)
+            StdOut.println(candidates[i]);
+    }
+}
