@@ -1,6 +1,12 @@
 package _3_Searching._3_1_ElementarySymbolTables;
 
 
+import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
+
+import java.util.NoSuchElementException;
+
 /******************************************************************************
  *  Compilation:  javac BinarySearchST.java
  *  Execution:    java BinarySearchST
@@ -105,20 +111,204 @@ public class BinarySearchST<Key extends Comparable<Key>, Value> {
     public void put(Key key, Value val){
         if (key == null) throw new IllegalArgumentException("first argument to put() is null");
 
+        // val为空，则删除键
+        if (val == null) delete(key);
+
         //
+        if (n == keys.length) resize(keys.length*2);
+        int i = rank(key);
+        for (int j = n; j > i; j--){
+            keys[j] = keys[j-1];
+            vals[j] = vals[j-1];
+        }
+
+        keys[i] = key;
+        vals[i] = val;
+        n++;
+
+        assert check();
     }
 
-    public void del(Key key){
+    /**
+     * remove the specified key and associated value from this symbol table
+     * (if the key is in the symbol table)
+     * @param key tha key
+     */
+    public void delete(Key key){
         if (key == null) throw new IllegalArgumentException("argument to del() is null");
+        if (isEmpty()) return;
+        // compute rank
+        int i = rank(key);
 
+        // key not in table
+        if (i == n && keys[i].compareTo(key) == 0) return;
+
+        for (int j = i; j < n-1; j++) {
+            keys[j] = keys[j+1];
+            vals[j] = vals[j+1];
+        }
+
+        n--;
+        keys[n] = null;
+        vals[n] = null;
+
+        if (n >= 0 && n == keys.length/4) resize(keys.length/2);
+        assert check();
     }
 
+    /**
+     * Remove the smallest key and associated value from this Symbol table
+     */
     public void delMin(){
-
+        if (isEmpty()) throw new NoSuchElementException("Symbol table underflow error");
+        delete(min());
     }
 
+    /**
+     * Remove the largest key and associated value from this symbol table.
+     */
     public void delMax(){
-
+        if (isEmpty()) throw new NoSuchElementException("Symbol table underflow error");
+        delete(max());
     }
 
+    /**
+     * returns the smallest key in this symbol table.
+     * @return the smallest key in this symbol table.
+     */
+    public Key min(){
+        if (isEmpty()) throw new NoSuchElementException("Symbol table underflow error");
+        return keys[0];
+    }
+
+    /**
+     * returns the largest key in this symbol table.
+     * @return the largest key in this symbol table.
+     */
+    public Key max(){
+        if (isEmpty()) throw new NoSuchElementException("Symbol table underflow error");
+        return keys[n-1];
+    }
+
+    /**
+     * Return the kth smallest key in this symbol table.
+     * @param k the order statistic
+     * @return kth smallest key in this symbol table.
+     */
+    public Key select(int k){
+        if (k < 0 || k >= size()) throw new IllegalArgumentException("called select() with invalid argument : " + k);
+        return keys[k];
+    }
+
+    /**
+     * Returns the largest key in this symbol table less than or equal to key
+     *
+     * @param  key the key
+     * @return the largest key in this symbol table less than or equal to key
+     */
+    public Key floor(Key key){
+        if (key == null) throw new IllegalArgumentException("argument to floor() is null");
+        int i = rank(key);
+        if (i == 0) return null;
+        else if (i > 0 && key.equals(keys[i])) return keys[i];
+        else return keys[i-1];
+    }
+
+    /**
+     * Returns the smallest key in this symbol table greater than or equal to key
+     *
+     * @param  key the key
+     * @return the smallest key in this symbol table greater than or equal to key
+     */
+    public Key ceiling(Key key){
+        if (key == null) throw new IllegalArgumentException("argument to ceiling() is null");
+        int i = rank(key);
+        if (i == 0) return null;
+        else if (i > 0 && key.equals(keys[i])) return keys[i];
+        else return keys[i+1];
+    }
+
+    /**
+     * Returns the number of keys in this symbol table in the specified range.
+     * @param lo minimum endpoint
+     * @param hi maximum endpoint
+     * @return the number of keys in this symbol table in the specified range.
+     */
+    public int size(Key lo, Key hi){
+        if (lo == null) throw new IllegalArgumentException("first argument to size() is null");
+        if (hi == null) throw new IllegalArgumentException("second argument to size() is null");
+        if (lo.compareTo(hi) > 0) return 0;
+        if (contains(hi)) return rank(hi) - rank(lo) ;
+        else return rank(hi) - rank(lo);
+    }
+
+    /**
+     * Returns all keys in this symbol table as an Iterable.
+     * To iterate over all of the keys in the symbol table named st,
+     * use the foreach notation: for (Key key : st.keys()).
+     *
+     * @return all keys in this symbol table
+     */
+    public Iterable<Key> keys(){
+        return keys(min(), max());
+    }
+
+    /**
+     * Returns all keys in this symbol table in the given range,
+     * as an Iterable.
+     *
+     * @param lo minimum endpoint
+     * @param hi maximum endpoint
+     * @return all keys in this symbol table between lo
+     *         (inclusive) and hi (inclusive)
+     */
+    public Iterable<Key> keys(Key lo, Key hi){
+        if (lo == null) throw new IllegalArgumentException("first argument to keys() is null");
+        if (hi == null) throw new IllegalArgumentException("second argument to keys() is null");
+
+        Queue<Key> queue = new Queue<Key>();
+        if (lo.compareTo(hi) > 0) return queue;
+        for (int i = rank(lo); i < rank(hi); i++)
+            queue.enqueue(keys[i]);
+        if (contains(hi)) queue.enqueue(keys[rank(hi)]);
+        return queue;
+    }
+
+    /***************************************************************************
+     *  Check internal invariants.
+     ***************************************************************************/
+
+    private boolean check(){
+        return isSorted() && rankCheck();
+    }
+
+    // are the items in the array in ascending order?
+    private boolean isSorted(){
+        for (int i = 1; i < size(); i++)
+            if (keys[i].compareTo(keys[i-1]) < 0) return false;
+        return true;
+    }
+
+    //check that rank(select(i)) = i
+    private boolean rankCheck() {
+        // todo:这里两个循环是否重复了，检查的都是同一个?
+        // 只要是有序的，那么返回的肯定是true?
+        for (int i = 0; i < size(); i++)
+            if (i != rank(select(i))) return false;
+        for (int i = 0; i < size(); i++)
+            if (keys[i].compareTo(select(rank(keys[i]))) != 0) return false;
+        return true;
+    }
+
+
+    public static void main(String[] args){
+        BinarySearchST<String, Integer> st = new BinarySearchST<>();
+        for (int i = 0; !StdIn.isEmpty(); i++) {
+            String key = StdIn.readString();
+            st.put(key, i);
+        }
+
+        for (String s : st.keys())
+            StdOut.println(s + " " + st.get(s));
+    }
 }
