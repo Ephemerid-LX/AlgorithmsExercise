@@ -53,7 +53,7 @@ public class BinarySearchST<Key extends Comparable<Key>, Value> {
         Value[] tempVals = (Value[]) new Object[capacity];
         for (int i = 0; i < n; i++){
             tempKeys[i] = keys[i];
-            tempVals[i] = tempVals[i];
+            tempVals[i] = vals[i];
         }
         keys = tempKeys;
         vals = tempVals;
@@ -101,8 +101,8 @@ public class BinarySearchST<Key extends Comparable<Key>, Value> {
         while (lo <= hi) {
             int mid = lo + (hi - lo) / 2;
             int cmp = key.compareTo(keys[mid]);
-            if (cmp < 0) lo = mid + 1;
-            else if (cmp > 0) hi = mid - 1;
+            if (cmp < 0) hi = mid - 1;
+            else if (cmp > 0) lo = mid + 1;
             else return mid;
         }
         return lo;
@@ -114,9 +114,16 @@ public class BinarySearchST<Key extends Comparable<Key>, Value> {
         // val为空，则删除键
         if (val == null) delete(key);
 
+        int i = rank(key);
+        //
+        if (i < n && key.compareTo(keys[i]) == 0) {
+            vals[i] = val;
+            return;
+        }
+
         //
         if (n == keys.length) resize(keys.length*2);
-        int i = rank(key);
+
         for (int j = n; j > i; j--){
             keys[j] = keys[j-1];
             vals[j] = vals[j-1];
@@ -159,7 +166,7 @@ public class BinarySearchST<Key extends Comparable<Key>, Value> {
     /**
      * Remove the smallest key and associated value from this Symbol table
      */
-    public void delMin(){
+    public void deleteMin(){
         if (isEmpty()) throw new NoSuchElementException("Symbol table underflow error");
         delete(min());
     }
@@ -167,7 +174,7 @@ public class BinarySearchST<Key extends Comparable<Key>, Value> {
     /**
      * Remove the largest key and associated value from this symbol table.
      */
-    public void delMax(){
+    public void deleteMax(){
         if (isEmpty()) throw new NoSuchElementException("Symbol table underflow error");
         delete(max());
     }
