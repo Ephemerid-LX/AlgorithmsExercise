@@ -1,8 +1,9 @@
 package _3_Searching._3_2_BinarySearchTrees;
 
 import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
 
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /******************************************************************************
@@ -293,6 +294,31 @@ public class BST<Key extends Comparable<Key>,  Value> {
         if (cmplo < 0) keys(x.left, queue, lo, hi);
         if (cmplo <= 0 && cmphi >= 0) queue.enqueue(x.key);
         if (cmphi > 0) keys(x.right, queue, lo, hi);
+    }
+
+    /**
+     * Returns the height of the BST(for debugging).
+     * @return the height og the BST (a 1-node tree has height 0)
+     */
+    public int height(){
+        return height(root);
+    }
+
+    private int height(Node x){
+        if (x == null) return -1;
+        return 1 + Math.max(height(x.left), height(x.right));
+    }
+
+    public static void main(String[] args){
+        BST<String, Integer> st = new BST<>();
+        for (int i = 0; !StdIn.isEmpty(); i++){
+            String key = StdIn.readString();
+            st.put(key, i);
+        }
+
+        for (String s : st.keys()){
+            StdOut.println(s + " " + st.get(s));
+        }
     }
 
 }
