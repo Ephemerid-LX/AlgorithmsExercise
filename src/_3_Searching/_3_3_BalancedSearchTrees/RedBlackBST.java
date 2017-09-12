@@ -43,6 +43,14 @@ public class RedBlackBST<Key extends Comparable, Value> {
         private Node left, right;
         private boolean color;
         private int size;
+
+        public Node(Key key, Value val, int size, boolean color){
+            this.key = key;
+            this.val = val;
+            this.size = size;
+            this.color = color;
+
+        }
     }
 
     public RedBlackBST(){
@@ -52,8 +60,9 @@ public class RedBlackBST<Key extends Comparable, Value> {
     /***************************************************************************
      *  Node helper methods.
      ***************************************************************************/
-    private boolean isRed(Node h){
-        return h.color;
+    private boolean isRed(Node x){
+        if (x == null) return false;
+        return x.color == RED;
     }
 
     private int size(Node x){
@@ -67,6 +76,32 @@ public class RedBlackBST<Key extends Comparable, Value> {
 
     public boolean isEmpty(){
         return size(root) == 0;
+    }
+
+    /***************************************************************************
+     *  Standard BST search.
+     ***************************************************************************/
+    public Value get(Key key){
+        if (key == null) throw new IllegalArgumentException("argument to get() is null");
+        return get(root, key);
+    }
+
+    private Value get(Node x, Key key){
+        /* 递归：
+        if (x == null) return null;
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) return get(x.left, key);
+        else if (cmp > 0) return get(x.right, key);
+        return x;
+        */
+        // 循环
+        while (x != null) {
+            int cmp = key.compareTo(x.key);
+            if (cmp < 0) x = x.left;
+            else if (cmp > 0) x = x.right;
+            else return x.val;
+        }
+        return null;
     }
 
     /***************************************************************************
@@ -88,35 +123,49 @@ public class RedBlackBST<Key extends Comparable, Value> {
 
     private Node put(Node h, Key key, Value val){
         // 1.如果h为Null，则新建结点，为红色结点
+        if (h == null) return new Node(key, val, 1, RED);
 
+        int cmp = key.compareTo(h.key);
         // 2.如果key大于h.key，则在h的右链接中插入
-
+        if (cmp > 0) put(h.right, key, val);
         // 3.如果key小于h.key，则在h的左链接中插入
-
+        if (cmp < 0) put(h.left, key, val);
         // 4.如果key等于h.key，则更新值
+        else h.val = val;
 
+        /*
+        考虑复杂，并不需要靠考虑父结点，收到了 flipColor() 中assert的影响
         // 5.在插入或者更新后，
         // 5.1 如果父结点是红色结点
         // 5.1.1 如果新结点是左结点，且父节点是红色结点，则右旋，再反转颜色
-
         // 5.1.2 如果新结点是右结点，且父结点是红色结点，则左旋，再右旋，最后转换颜色
-
         // 5.2 如果父结点不是红色结点
         // 5.2.1 如果新结点的兄弟结点（父节点的另外一个结点）为红色结点，则翻转颜色
-
         // 5.2.2 如果新结点在右侧，则左旋
-
         // 5.2.3 如果新结点在左侧，则右旋
+        */
+        // 5.在插入或者更新后
+        // 5.1 如果左子结点是黑色结点，右子结点是红色结点，则左旋
+        if (!isRed(h.left) && isRed(h.right)) rotateLeft(h);
+        // 5.2 如果左子结点是红色结点，左子结点的左子节点也是红色结点，则右旋
+        if (isRed(h.left) && isRed(h.left.left)) rotateRight(h);
+        // 5.3 如果左子结点和右子结点都是红色结点，则颜色转换
+        if (isRed(h.left) && isRed(h.right)) flipColor(h);
 
-        // 6 返回结点，并认为其为新结点
-        return null;
+        // 这句是否不需要，因为在左旋右旋的时候就重新计算过
+        h.size = size(h.left) + size(h.right);
+        // 6. 返回该结点
+        return h;
     }
-
 
     public void delete(Key key){
 
     }
 
+    private Node delete(Node h, Key key) {
+
+        return null;
+    }
     /***************************************************************************
      *  Red-black tree helper functions.
      ***************************************************************************/
