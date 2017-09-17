@@ -1,6 +1,8 @@
 package _3_Searching._3_3_BalancedSearchTrees;
 
-import com.sun.org.apache.regexp.internal.RE;
+import edu.princeton.cs.algs4.Queue;
+
+import java.util.NoSuchElementException;
 
 /******************************************************************************
  *  Compilation:  javac RedBlackBST.java
@@ -37,14 +39,14 @@ public class RedBlackBST<Key extends Comparable, Value> {
 
     private Node root;
 
-    private class Node{
+    private class Node {
         private Key key;
         private Value val;
         private Node left, right;
         private boolean color;
         private int size;
 
-        public Node(Key key, Value val, int size, boolean color){
+        public Node(Key key, Value val, int size, boolean color) {
             this.key = key;
             this.val = val;
             this.size = size;
@@ -53,40 +55,40 @@ public class RedBlackBST<Key extends Comparable, Value> {
         }
     }
 
-    public RedBlackBST(){
+    public RedBlackBST() {
 
     }
 
     /***************************************************************************
      *  Node helper methods.
      ***************************************************************************/
-    private boolean isRed(Node x){
+    private boolean isRed(Node x) {
         if (x == null) return false;
         return x.color == RED;
     }
 
-    private int size(Node x){
+    private int size(Node x) {
         if (x == null) return 0;
         return x.size;
     }
 
-    public int size(){
+    public int size() {
         return size(root);
     }
 
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return size(root) == 0;
     }
 
     /***************************************************************************
      *  Standard BST search.
      ***************************************************************************/
-    public Value get(Key key){
+    public Value get(Key key) {
         if (key == null) throw new IllegalArgumentException("argument to get() is null");
         return get(root, key);
     }
 
-    private Value get(Node x, Key key){
+    private Value get(Node x, Key key) {
         /* 递归：
         if (x == null) return null;
         int cmp = key.compareTo(x.key);
@@ -104,15 +106,19 @@ public class RedBlackBST<Key extends Comparable, Value> {
         return null;
     }
 
+    public boolean contains(Key key) {
+        return get(key) != null;
+    }
+
     /***************************************************************************
      *  Red-black tree insertion.
      ***************************************************************************/
-    public void put(Key key, Value val){
+    public void put(Key key, Value val) {
         //1.如果key为null,则出异常
         //2.如果val为null，则删除key
         //3.else put
         if (key == null) throw new IllegalArgumentException("first argument to put() is null");
-        if (val == null){
+        if (val == null) {
             delete(key);
             return;
         }
@@ -121,7 +127,7 @@ public class RedBlackBST<Key extends Comparable, Value> {
         root.color = BLACK;
     }
 
-    private Node put(Node h, Key key, Value val){
+    private Node put(Node h, Key key, Value val) {
         // 1.如果h为Null，则新建结点，为红色结点
         if (h == null) return new Node(key, val, 1, RED);
 
@@ -130,7 +136,7 @@ public class RedBlackBST<Key extends Comparable, Value> {
         if (cmp > 0) put(h.right, key, val);
         // 3.如果key小于h.key，则在h的左链接中插入
         if (cmp < 0) put(h.left, key, val);
-        // 4.如果key等于h.key，则更新值
+            // 4.如果key等于h.key，则更新值
         else h.val = val;
 
         /*
@@ -146,7 +152,7 @@ public class RedBlackBST<Key extends Comparable, Value> {
         */
         // 5.在插入或者更新后
         // 5.1 如果左子结点是黑色结点，右子结点是红色结点，则左旋
-        if (!isRed(h.left) && isRed(h.right)) rotateLeft(h);
+        if (! isRed(h.left) && isRed(h.right)) rotateLeft(h);
         // 5.2 如果左子结点是红色结点，左子结点的左子节点也是红色结点，则右旋
         if (isRed(h.left) && isRed(h.left.left)) rotateRight(h);
         // 5.3 如果左子结点和右子结点都是红色结点，则颜色转换
@@ -158,7 +164,7 @@ public class RedBlackBST<Key extends Comparable, Value> {
         return h;
     }
 
-    public void delete(Key key){
+    public void delete(Key key) {
 
     }
 
@@ -166,10 +172,11 @@ public class RedBlackBST<Key extends Comparable, Value> {
 
         return null;
     }
+
     /***************************************************************************
      *  Red-black tree helper functions.
      ***************************************************************************/
-    private Node rotateLeft(Node h){
+    private Node rotateLeft(Node h) {
         //h ！= null 并且其右链接为红色
         //assert h != null && isRed(h.right)
         // 1.红色右链接记为x
@@ -190,7 +197,7 @@ public class RedBlackBST<Key extends Comparable, Value> {
         return x;
     }
 
-    private Node rotateRight(Node h){
+    private Node rotateRight(Node h) {
         // assert h != null && isRed(h.right)
         Node x = h.left;
         h.left = x.right;
@@ -202,14 +209,310 @@ public class RedBlackBST<Key extends Comparable, Value> {
         return x;
     }
 
-    private void flipColor(Node h){
+    private void flipColor(Node h) {
         // h must have opposite color of its two children
         // assert (h != null) && (h.left != null) && (h.right != null)
         // assert (!isRed(h) &&  isRed(h.left) &&  isRed(h.right))
         //    || (isRed(h)  && !isRed(h.left) && !isRed(h.right));
-        h.color = !isRed(h);
-        h.right.color = !isRed(h.right);
-        h.left.color = !isRed(h.left);
+        h.color = ! isRed(h);
+        h.right.color = ! isRed(h.right);
+        h.left.color = ! isRed(h.left);
+    }
+
+
+    /***************************************************************************
+     *  Utility functions.
+     ***************************************************************************/
+    /**
+     * Returns the height of the BST
+     *
+     * @return the height of the BST
+     */
+    public int height() {
+        return height(root);
+    }
+
+    public int height(Node x) {
+        if (x == null) return - 1;
+        return 1 + Math.max(height(x.left), height(x.right));
+    }
+
+    /***************************************************************************
+     *  Ordered symbol table methods.
+     ***************************************************************************/
+    /**
+     * returns the smallest key in the symbol table
+     *
+     * @return the smallest key in the symbol table
+     */
+    public Key min() {
+        if (isEmpty()) throw new NoSuchElementException("called min() with empty symbol table");
+        return min(root).key;
+    }
+
+    private Node min(Node x) {
+        if (x.left == null) return x;
+        return min(x.left);
+    }
+
+    /**
+     * returns the largest key in the symbol table
+     *
+     * @return the largest key in the symbol table
+     */
+    public Key max() {
+        if (isEmpty()) throw new NoSuchElementException("called max() with empty symbol table");
+        return max(root).key;
+    }
+
+    private Node max(Node x) {
+        if (x.right == null) return x;
+        return max(x.right);
+    }
+
+    /**
+     * Returns the largest key in the symbol table less than or equal to key
+     *
+     * @param key the key
+     * @return the largest key in the symbol table less than or equal to key
+     */
+    public Key floor(Key key) {
+        if (key == null) throw new IllegalArgumentException("argument to floor() is null");
+        if (isEmpty()) throw new NoSuchElementException("called floor() with empty symbol table");
+        Node x = floor(root, key);
+        if (x != null) return x.key;
+        return null;
+    }
+
+    private Node floor(Node x, Key key) {
+        // 1. x==null return null
+        if (x == null) return null;
+        int cmp = key.compareTo(x.key);
+        // 2. x.key > key 在左子树中继续查找
+        if (cmp < 0) return floor(x, key);
+            // 3. x.key == key return x
+        else if (cmp == 0) return x;
+        // 4. x.key < key 在右子树中继续查找，若找到则返回该值，找不到则返回x
+        Node t = floor(x.right, key);
+        if (t != null) return t;
+        return x;
+    }
+
+    /**
+     * Returns the smallest key in the symbol table greater than or equal to key
+     *
+     * @param key the key
+     * @return the smallest key in the symbol table greater than or equal to key
+     */
+    public Key ceiling(Key key) {
+        if (key == null) throw new IllegalArgumentException("argument to ceiling() is null");
+        if (isEmpty()) throw new NoSuchElementException("called ceiling() with empty symbol table");
+        Node x = ceiling(root, key);
+        if (x != null) return x.key;
+        return null;
+    }
+
+    private Node ceiling(Node x, Key key) {
+        // 1. 如果x==null return x;
+        if (x == null) return null;
+        int cmp = key.compareTo(x.key);
+        // 2. 如果x.key < key 则在右子树中找
+        if (cmp > 0) return ceiling(x.right, key);
+            // 3. 如果x.key == key 则返回x
+        else if (cmp == 0) return x;
+        // 4. 如果x.key > key 则在左子树中赵，如果找到t,则返回t,如果没找到,则返回x
+        Node t = ceiling(x.left, key);
+        if (t != null) return t;
+        return x;
+    }
+
+    /**
+     * Returns the kth smallest key in the symbol table
+     *
+     * @param k the order statistic
+     * @return the kth smallest key in the symbol table
+     */
+    public Key select(int k) {
+        // k >= 0 && k < root.size;
+        if (k < 0 || k >= size(root)) throw new IllegalArgumentException("called select with invalid argument: " + k);
+        return select(root, k).key;
+    }
+
+    private Node select(Node x, int k) {
+        int t = size(x);
+        // 1.如果k < x.size,在左子树中找排名为k的结点
+        if (k < t) return select(x.left, k);
+            // 2.如果k > x.size-1, 在右子树中找排名为(k-x.size-1)的结点
+        else if (k > t) return select(x.right, k - t - 1);
+            // 3.如果k == x.size,则返回key
+        else return x;
+    }
+
+    /**
+     * Returns the number of keys in the symbol table strictly less than key
+     *
+     * @param key the key
+     * @return the number of keys in the symbol table strictly less than key
+     */
+    public int rank(Key key) {
+        // key ！= null
+        if (key == null) throw new IllegalArgumentException("argument to rank() is null");
+        return rank(root, key);
+    }
+
+    private int rank(Node x, Key key) {
+        int cmp = key.compareTo(x.key);
+        // 1. 如果key < x.key,则在左子树中找，返回rank(x.left,key)
+        if (cmp < 0) return rank(x.left, key);
+            // 2. 如果key > x.key,则在右子树中找，返回1+left.size+rank(x.right,key)
+        else if (cmp > 0) return 1 + size(x.left) + rank(x.right, key);
+            // 3. 如果key == x.key,则返回left.size
+        else return size(x.left);
+    }
+
+    /***************************************************************************
+     *  Range count and range search.
+     ***************************************************************************/
+    /**
+     * Returns all keys in the symbol table as an Iterable.
+     * To iterate over all of the keys in the symbol table named st,
+     * use the foreach notation : for (Key key : st.keys()).
+     *
+     * @return all keys in the symbol table as an Iterable.
+     */
+    public Iterable<Key> keys() {
+        if (isEmpty()) return new Queue<>();
+        return keys(min(), max());
+    }
+
+    /**
+     * Returns all keys in the symbol table in the given range,
+     * as an Iterable.
+     *
+     * @param lo minimum endpoint
+     * @param hi maximum endpoint
+     * @return all keys in the symbol table between lo
+     * (inclusive) and hi(inclusive) as an Iterable
+     */
+    public Iterable<Key> keys(Key lo, Key hi) {
+        // lo != null && hi != null
+        if (lo == null) throw new IllegalArgumentException("first argument to keys() is null");
+        if (hi == null) throw new IllegalArgumentException("second argument to keys() is null");
+
+        Queue<Key> queue = new Queue<>();
+        keys(root, queue, lo, hi);
+        return queue;
+    }
+
+    private void keys(Node x, Queue<Key> queue, Key lo, Key hi) {
+        // 如果x==null，推出
+        if (x == null) return;
+
+        int cmplo = lo.compareTo(x.key);
+        int cmphi = hi.compareTo(x.key);
+        // 如果lo < x.key,则在进入左子树
+        if (cmplo < 0) keys(x.left, queue, lo, hi);
+        // 开始入栈
+        if (cmplo <= 0 || cmphi >= 0) queue.enqueue(x.key);
+        // 如果hi > x.key,则进入右子树
+        if (cmphi > 0) keys(x.right, queue, lo, hi);
+    }
+
+    /**
+     * Returns the number of keys in the symbol table in the given range
+     *
+     * @param lo minimum endpoint
+     * @param hi maximum endpoint
+     * @return the number of keys in the symbol table between lo(inclusive)
+     * and hi(inclusive)
+     */
+    public int size(Key lo, Key hi) {
+        if (lo == null) throw new IllegalArgumentException("first argument to size() is null");
+        if (hi == null) throw new IllegalArgumentException("second argument to size() is null");
+
+        // 如果lo > hi，0
+        if (lo.compareTo(hi) > 0) return 0;
+        // hi的排名-lo的排名
+        if (contains(hi)) return 1 + rank(hi) - rank(lo);
+        else return rank(hi) - rank(lo);
+    }
+
+    /***************************************************************************
+     *  Check integrity of red-black tree data structure.
+     ***************************************************************************/
+    private boolean check() {
+        return true;
+    }
+
+    //TODO: 为什么这样就可以判断是否是二叉树？
+    // does this binary tree satisfy symmetric order?
+    // Note: this test also ensures that data structure is a binary tree since order is strict
+    private boolean isBST() {
+        return isBST(root, null, null);
+    }
+
+    // is the tree rooted at x a BST with all keys strictly between min and max
+    // (if min or max is null, treat as empty constraint)
+    // Credit: Bob Dondero's elegant solution
+    private boolean isBST(Node x, Key min, Key max) {
+        if (x == null) return true;
+        if (min != null && x.key.compareTo(min) <= 0) return false;
+        if (max != null && x.key.compareTo(max) >= 0) return false;
+        return isBST(x.left, min, x.key) && isBST(x.right, x.key, max);
+    }
+
+    // are the size fields correct?
+    private boolean isSizeConsistent() {
+        return isSizeConsistent(root);
+    }
+
+    private boolean isSizeConsistent(Node x) {
+        if (x == null) return true;
+        // x.size与重新计算的值是否相等
+        if (x.size != size(x.left) + size(x.right) + 1) return false;
+        return isSizeConsistent(x.left) && isSizeConsistent(x.right);
+    }
+
+    // check that ranks are consistent
+    private boolean isRankConsistent() {
+        // select 和 rank 的转置
+        for (int i = 0; i < size(); i++)
+            if (i != rank(select(i))) return false;
+        for (Key key : keys())
+            if (key != select(rank(key))) return false;
+        return true;
+    }
+
+    // Does the tree have no right links, and at most on(left)
+    // red links in a row on any path?
+    private boolean is23() { return is23(root); }
+
+    private boolean is23(Node x) {
+        // 右子树没有红链接，没有两条相邻的红链接
+        if (x == null) return true;
+        if (isRed(x.right)) return false;
+        if (x != null && isRed(x) && isRed(x.left)) return false;
+        return is23(x.left) && is23(x.right);
+    }
+
+    // dose every path form the root to a leaf have the given number of black links?
+    private boolean isBalanced() {
+        // 所有子叶到根结点的路径上，黑链接个数相同
+        // 1. 计算一条路径上黑结点的个数
+        int black = 0;
+        Node x = root;
+        while (x != null) {
+            if (! isRed(x)) black++;
+            x = x.left;
+        }
+        return isBalanced(root, black);
+    }
+
+    private boolean isBalanced(Node x, int black) {
+        // 2. 计算各个路径上的距离是否与最开始计算的相同
+        if (x == null) return black == 0;
+        if (! isRed(x)) black--;
+        return isBalanced(x.left, black) && isBalanced(x.right, black);
     }
 
 }
