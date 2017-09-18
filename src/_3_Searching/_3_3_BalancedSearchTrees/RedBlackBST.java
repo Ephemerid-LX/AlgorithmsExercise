@@ -1,6 +1,8 @@
 package _3_Searching._3_3_BalancedSearchTrees;
 
 import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
 
 import java.util.NoSuchElementException;
 
@@ -123,7 +125,7 @@ public class RedBlackBST<Key extends Comparable, Value> {
             return;
         }
 
-        put(root, key, val);
+        root = put(root, key, val);
         root.color = BLACK;
     }
 
@@ -133,14 +135,14 @@ public class RedBlackBST<Key extends Comparable, Value> {
 
         int cmp = key.compareTo(h.key);
         // 2.如果key大于h.key，则在h的右链接中插入
-        if (cmp > 0) put(h.right, key, val);
+        if (cmp > 0) h.right = put(h.right, key, val);
         // 3.如果key小于h.key，则在h的左链接中插入
-        if (cmp < 0) put(h.left, key, val);
-            // 4.如果key等于h.key，则更新值
+        else if (cmp < 0) h.left = put(h.left, key, val);
+        // 4.如果key等于h.key，则更新值
         else h.val = val;
 
         /*
-        考虑复杂，并不需要靠考虑父结点，收到了 flipColor() 中assert的影响
+        考虑复杂，并不需要靠考虑父结点，收到了 flipColors() 中assert的影响
         // 5.在插入或者更新后，
         // 5.1 如果父结点是红色结点
         // 5.1.1 如果新结点是左结点，且父节点是红色结点，则右旋，再反转颜色
@@ -152,30 +154,112 @@ public class RedBlackBST<Key extends Comparable, Value> {
         */
         // 5.在插入或者更新后
         // 5.1 如果左子结点是黑色结点，右子结点是红色结点，则左旋
-        if (! isRed(h.left) && isRed(h.right)) rotateLeft(h);
+        if (! isRed(h.left) && isRed(h.right)) h = rotateLeft(h);
         // 5.2 如果左子结点是红色结点，左子结点的左子节点也是红色结点，则右旋
-        if (isRed(h.left) && isRed(h.left.left)) rotateRight(h);
+        if (isRed(h.left) && isRed(h.left.left)) h = rotateRight(h);
         // 5.3 如果左子结点和右子结点都是红色结点，则颜色转换
-        if (isRed(h.left) && isRed(h.right)) flipColor(h);
+        if (isRed(h.left) && isRed(h.right)) flipColors(h);
 
         // 这句是否不需要，因为在左旋右旋的时候就重新计算过
-        h.size = size(h.left) + size(h.right);
+        h.size = 1 + size(h.left) + size(h.right);
         // 6. 返回该结点
         return h;
     }
 
-    public void delete(Key key) {
+    /***************************************************************************
+     *  Red-black tree deletion.
+     ***************************************************************************/
+    /**
+     * Removes the smallest key and associated value from the symbol table.
+     */
+    public void deleteMin() {
+        // 向下查找
+        if (isEmpty()) throw new NoSuchElementException("BST underflow");
+        if (!isRed(root.left) && !isRed(root.right)) root.color = RED;
+        root = deleteMin(root);
+        if (!isEmpty()) root.color = BLACK;
+    }
 
+    private Node deleteMin(Node x) {
+        if (x.left == null) return null;
+        if (!isRed(x.left) && !isRed(x.right)) x = moveRedLeft(x);
+        x.left = deleteMin(x.left);
+        return balance(x);
+    }
+
+    /**
+     *  Removes the largest key and associated value from the symbol table.
+     */
+    public void deleteMax() {
+        if (isEmpty()) throw new NoSuchElementException("BST underflow");
+        if (!isRed(root.left) && !isRed(root.right)) root.color = RED;
+        root = deleteMax(root);
+        if (!isEmpty()) root.color = BLACK;
+    }
+
+    private Node deleteMax(Node x){
+        if (isRed(x.left)) x = rotateRight(x);
+        //todo: x.left != null 这种情况为什么不讨论？
+        //return x.left
+        if (x.right == null) return null;
+        if (!isRed(x.right) && !isRed(x.right.left)) x = moveRedRight(x);
+        x.right = deleteMax(x.right);
+        return balance(x);
+    }
+
+    /**
+     * Removes hte specified key  and its associated value from this symbol table
+     * (if the key is in this symbol table).
+     * @param key the key
+     */
+    public void delete(Key key) {
+        if (isEmpty()) throw new NoSuchElementException("BST underflow");
+        if (!contains(key)) return;
+
+        if (!isRed(root.left) && !isRed(root.right)) root.color = RED;
+
+        root = delete(root, key);
+        if (!isEmpty()) root.color = BLACK;
     }
 
     private Node delete(Node h, Key key) {
-
-        return null;
+        if (key.compareTo(h.key) < 0) {
+            if (!isRed(h.left) && !isRed(h.left.left))
+                h = moveRedLeft(h);
+            h.left = delete(h.left, key);
+        }else {
+            if (isRed(h.left)) h = rotateRight(h);
+            //todo: h.left != null 这种情况为什么不讨论？
+            //return h.left
+            if (key.compareTo(h.key) == 0 && h.right == null) return null;
+            if (!isRed(h.right) && !isRed(h.right.left)) h = moveRedLeft(h);
+            if (key.compareTo(h.key) == 0) {
+                Node x = min(h.right);
+                h.key = x.key;
+                h.val = x.val;
+                h.right = deleteMin(h.right);
+            }else{
+                h.right = delete(h.right, key);
+            }
+        }
+        return balance(h);
     }
 
     /***************************************************************************
      *  Red-black tree helper functions.
      ***************************************************************************/
+    private Node rotateRight(Node h) {
+        // assert h != null && isRed(h.left)
+        Node x = h.left;
+        h.left = x.right;
+        x.right = h;
+        x.color = h.color;
+        h.color = RED;
+        x.size = h.size;
+        h.size = 1 + size(h.left) + size(h.right);
+        return x;
+    }
+
     private Node rotateLeft(Node h) {
         //h ！= null 并且其右链接为红色
         //assert h != null && isRed(h.right)
@@ -183,8 +267,8 @@ public class RedBlackBST<Key extends Comparable, Value> {
         Node x = h.right;
         // 2.h的右链接指向x的左链接
         h.right = x.left;
-        // 3.x右链接指向h
-        x.right = h;
+        // 3.x左链接指向h
+        x.left = h;
         // 4.x的颜色变为h的颜色
         x.color = h.color;
         // 5.h的颜色变为红色
@@ -197,19 +281,7 @@ public class RedBlackBST<Key extends Comparable, Value> {
         return x;
     }
 
-    private Node rotateRight(Node h) {
-        // assert h != null && isRed(h.right)
-        Node x = h.left;
-        h.left = x.right;
-        x.right = x;
-        x.color = h.color;
-        h.color = RED;
-        x.size = h.size;
-        h.size = 1 + size(h.left) + size(h.right);
-        return x;
-    }
-
-    private void flipColor(Node h) {
+    private void flipColors(Node h) {
         // h must have opposite color of its two children
         // assert (h != null) && (h.left != null) && (h.right != null)
         // assert (!isRed(h) &&  isRed(h.left) &&  isRed(h.right))
@@ -219,6 +291,41 @@ public class RedBlackBST<Key extends Comparable, Value> {
         h.left.color = ! isRed(h.left);
     }
 
+
+    private Node moveRedLeft(Node h){
+        // h.left && h.right 都不是红色结点, 颜色转换
+        flipColors(h);
+        // 如果h.right && h.right.left都是红色结点,h.right右旋,h左旋,颜色转换
+        if (isRed(h.right) && isRed(h.right.left)) {
+            h.right = rotateRight(h.right);
+            h = rotateLeft(h);
+            flipColors(h);
+        }
+        //h.size = 1 + size(h.right) + size(h.left);
+        return h;
+    }
+
+    private Node moveRedRight(Node h){
+        flipColors(h);
+        if (isRed(h.left.left)) {
+            h = rotateRight(h);
+            flipColors(h);
+        }
+        //h.size = 1 + size(h.right) + size(h.left);
+        return h;
+    }
+
+    private Node balance(Node h){
+        // 如果h.right是红色结点，则左旋
+        if (isRed(h.right)) h = rotateLeft(h);
+        // 如果h.left && h.left.left是红色结点，则右旋
+        if (isRed(h.left) && isRed(h.left.left)) h = rotateRight(h);
+        // 如果h.left && h.right是红色结点，则颜色转换
+        if (isRed(h.left) && isRed(h.right)) flipColors(h);
+
+        h.size = 1 + size(h.right) + size(h.left);
+        return h;
+    }
 
     /***************************************************************************
      *  Utility functions.
@@ -289,8 +396,8 @@ public class RedBlackBST<Key extends Comparable, Value> {
         if (x == null) return null;
         int cmp = key.compareTo(x.key);
         // 2. x.key > key 在左子树中继续查找
-        if (cmp < 0) return floor(x, key);
-            // 3. x.key == key return x
+        if (cmp < 0) return floor(x.left, key);
+        // 3. x.key == key return x
         else if (cmp == 0) return x;
         // 4. x.key < key 在右子树中继续查找，若找到则返回该值，找不到则返回x
         Node t = floor(x.right, key);
@@ -339,7 +446,7 @@ public class RedBlackBST<Key extends Comparable, Value> {
     }
 
     private Node select(Node x, int k) {
-        int t = size(x);
+        int t = size(x.left);
         // 1.如果k < x.size,在左子树中找排名为k的结点
         if (k < t) return select(x.left, k);
             // 2.如果k > x.size-1, 在右子树中找排名为(k-x.size-1)的结点
@@ -441,7 +548,12 @@ public class RedBlackBST<Key extends Comparable, Value> {
      *  Check integrity of red-black tree data structure.
      ***************************************************************************/
     private boolean check() {
-        return true;
+        if (!isBST())            StdOut.println("Not in symmetric order");
+        if (!isSizeConsistent()) StdOut.println("Subtree counts not consistent");
+        if (!isRankConsistent()) StdOut.println("Ranks not consistent");
+        if (!is23())             StdOut.println("Not a 2-3 tree");
+        if (!isBalanced())       StdOut.println("Not balanced");
+        return isBST() && isSizeConsistent() && isRankConsistent() && is23() && isBalanced();
     }
 
     //TODO: 为什么这样就可以判断是否是二叉树？
@@ -515,4 +627,45 @@ public class RedBlackBST<Key extends Comparable, Value> {
         return isBalanced(x.left, black) && isBalanced(x.right, black);
     }
 
+    public static void main(String[] args) throws InterruptedException {
+        RedBlackBST<String, Integer> st = new RedBlackBST<>();
+        for (int i = 0; !StdIn.isEmpty(); i++){
+            String key = StdIn.readString();
+            st.put(key, i);
+        }
+        StdOut.println("check:" + st.check());
+        StdOut.println();
+
+        StdOut.println("height:" + st.height());
+        StdOut.println();
+
+        StdOut.println("G floor:" + st.floor("G"));
+        StdOut.println("G ceiling:" + st.ceiling("G"));
+        StdOut.println();
+
+        StdOut.println("M floor:" + st.floor("M"));
+        StdOut.println("M ceiling:" + st.ceiling("M"));
+        StdOut.println();
+
+        for (String s : st.keys())
+            StdOut.println(s + " " + st.get(s));
+        StdOut.println();
+
+        for (int i = 0; i < 3; i++){
+            StdOut.println("min:" + st.min() + "; max:" + st.max());
+            st.deleteMin();
+            st.deleteMax();
+        }
+
+        for (String s : st.keys()) {
+            StdOut.println(s + " " + st.get(s));
+        }
+        StdOut.println();
+
+        st.delete(st.select(2));
+        for (String s : st.keys()) {
+            StdOut.println(s + " " + st.get(s));
+        }
+        StdOut.println();
+    }
 }
