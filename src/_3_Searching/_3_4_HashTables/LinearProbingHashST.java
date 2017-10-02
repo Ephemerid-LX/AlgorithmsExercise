@@ -52,8 +52,9 @@ public class LinearProbingHashST<Key, Value> {
 
     public void resize(int capacity) {
         LinearProbingHashST temp = new LinearProbingHashST(capacity);
-        for (int i = 0; i < m && keys[i] != null; i++) {
-            temp.put(keys[i], vals[i]);
+        for (int i = 0; i < m; i++) {
+            if (keys[i] != null)
+                temp.put(keys[i], vals[i]);
         }
         this.m = temp.m;
         this.keys = (Key[]) temp.keys;
@@ -81,7 +82,8 @@ public class LinearProbingHashST<Key, Value> {
     public Value get(Key key) {
         if (key == null) throw new IllegalArgumentException("argument to get() is null");
         for (int i = hash(key); keys[i] != null && key.equals(keys[i]); i = (i + 1) % m)
-            return vals[i];
+            if (key.equals(keys[i]))
+                return vals[i];
         return null;
     }
 
@@ -101,9 +103,13 @@ public class LinearProbingHashST<Key, Value> {
         if (n >= m / 2) resize(2 * m);
 
         int i;
-        for (i = hash(key); keys[i] != null && key.equals(keys[i]); i = (i + 1) % m) {
-            vals[i] = val;
-            return;
+        for (i = hash(key); keys[i] != null; i = (i + 1) % m) {
+            // 不能使用 for (i = hash(key); keys[i] != null && key.equals(keys[i]); i = (i + 1) % m)
+            // 因为i的值不会增加
+            if (key.equals(keys[i])) {
+                vals[i] = val;
+                return;
+            }
         }
 
         keys[i] = key;
@@ -118,8 +124,10 @@ public class LinearProbingHashST<Key, Value> {
      */
     public void delete(Key key) {
         if (key == null) throw new IllegalArgumentException("argument to delete() is null");
+        if (!contains(key)) return;
+
         int i = hash(key);
-        while (key.equals(keys[i])) {
+        while (!key.equals(keys[i])) {
             i = (i + 1) % m;
         }
 
@@ -141,8 +149,9 @@ public class LinearProbingHashST<Key, Value> {
 
     public Iterable<Key> keys() {
         Queue<Key> queue = new Queue<>();
-        for (int i = 0; i < m && keys[i] != null; i++) {
-            queue.enqueue(keys[i]);
+        for (int i = 0; i < m; i++) {
+            if (keys[i] != null)
+                queue.enqueue(keys[i]);
         }
         return queue;
     }
@@ -157,6 +166,7 @@ public class LinearProbingHashST<Key, Value> {
         for (String s : st.keys()) {
             StdOut.println(s + " " + st.get(s));
         }
+        StdOut.println("size: " + st.size()) ;
         StdOut.println("============================");
 
         st.delete("S");
@@ -166,6 +176,7 @@ public class LinearProbingHashST<Key, Value> {
         for (String s : st.keys()) {
             StdOut.println(s + " " + st.get(s));
         }
+        StdOut.println("size: " +st.size());
         StdOut.println("===========================");
 
     }
