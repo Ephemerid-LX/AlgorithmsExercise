@@ -40,10 +40,11 @@ public class BreadthFirstDirectedPaths {
 
     /**
      * 单一起点的构造函数
+     *
      * @param G 图
      * @param s 起点
      */
-    public BreadthFirstDirectedPaths(Digraph G, int s){
+    public BreadthFirstDirectedPaths(Digraph G, int s) {
         marked = new boolean[G.V()];
         edgeTo = new int[G.V()];
         distTo = new int[G.V()];
@@ -55,10 +56,11 @@ public class BreadthFirstDirectedPaths {
 
     /**
      * 多起点的构造函数
+     *
      * @param G 图
      * @param sources 起点
      */
-    public BreadthFirstDirectedPaths(Digraph G, Iterable<Integer> sources){
+    public BreadthFirstDirectedPaths(Digraph G, Iterable<Integer> sources) {
         marked = new boolean[G.V()];
         edgeTo = new int[G.V()];
         distTo = new int[G.V()];
@@ -67,23 +69,25 @@ public class BreadthFirstDirectedPaths {
         bfs(G, sources);
     }
 
-    private void bfs(Digraph G, int s){
+    private void bfs(Digraph G, int s) {
         Queue<Integer> q = new Queue<>();
         marked[s] = true;
         distTo[s] = 0;
         q.enqueue(s);
-        while (!q.isEmpty()) {
+        while (! q.isEmpty()) {
             int v = q.dequeue();
             for (int w : G.adj(v)) {
-                marked[w] = true;
-                edgeTo[w] = v;
-                distTo[w] = distTo[v] + 1;
-                q.enqueue(w);
+                if (! marked[w]) {
+                    marked[w] = true;
+                    edgeTo[w] = v;
+                    distTo[w] = distTo[v] + 1;
+                    q.enqueue(w);
+                }
             }
         }
     }
 
-    private void bfs(Digraph G, Iterable<Integer> sources){
+    private void bfs(Digraph G, Iterable<Integer> sources) {
         Queue<Integer> q = new Queue<>();
         for (int s : sources) {
             marked[s] = true;
@@ -91,33 +95,37 @@ public class BreadthFirstDirectedPaths {
             q.enqueue(s);
         }
 
-        while (!q.isEmpty()) {
+        while (! q.isEmpty()) {
             int v = q.dequeue();
             for (int w : G.adj(v)) {
-                marked[w] = true;
-                edgeTo[w] = v;
-                distTo[w] = distTo[v] + 1;
-                q.enqueue(w);
+                if (! marked[w]) {
+                    marked[w] = true;
+                    edgeTo[w] = v;
+                    distTo[w] = distTo[v] + 1;
+                    q.enqueue(w);
+                }
             }
         }
     }
 
     /**
      * 是否有从起点s到达结点v的路径
+     *
      * @param v 结点v
      * @return 有:true; 没有:false
      */
-    public boolean hasPathTo(int v){
+    public boolean hasPathTo(int v) {
         validateVertex(v);
         return marked[v];
     }
 
     /**
      * 从起点s到结点v的路径
+     *
      * @param v 结点v
      * @return 起点s到结点v的路径
      */
-    public Iterable<Integer> pathTo(int v){
+    public Iterable<Integer> pathTo(int v) {
         validateVertex(v);
         Stack<Integer> path = new Stack<>();
         int x;
@@ -129,21 +137,23 @@ public class BreadthFirstDirectedPaths {
 
     /**
      * 返回起点s到结点v的距离
+     *
      * @param v 结点v
      * @return 起点s到结点v的距离
      */
-    public int distTo(int v){
+    public int distTo(int v) {
         validateVertex(v);
         return distTo[v];
     }
 
-    private void validateVertex(int v){
+    private void validateVertex(int v) {
         int V = marked.length;
-        if (v < 0 || v >= V)
-            throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (V-1));
+        if (v < 0 || v >= V) throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (V - 1));
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
+        // args[0]: file of graph
+        // args[1]: source of the graph
         In in = new In(args[0]);
         Digraph G = new Digraph(in);
 

@@ -1,8 +1,8 @@
 package _4_Graphs._4_2_DirectedGraphs;
 
 import edu.princeton.cs.algs4.*;
+import edu.princeton.cs.algs4.Digraph;
 
-import java.util.Iterator;
 
 /******************************************************************************
  *  Compilation:  javac DepthFirstOrder.java
@@ -45,23 +45,22 @@ public class DepthFirstOrder {
     private int preCounter;
     private int postCounter;
 
-    public DepthFirstOrder(Digraph G){
+    public DepthFirstOrder(Digraph G) {
         pre = new int[G.V()];
         post = new int[G.V()];
         preorder = new Queue<>();
         postorder = new Queue<>();
         marked = new boolean[G.V()];
         for (int v = 0; v < G.V(); v++)
-            if (!marked[v]) dfs(G, v);
+            if (! marked[v]) dfs(G, v);
     }
 
-    private void dfs(Digraph G, int v){
+    private void dfs(Digraph G, int v) {
         marked[v] = true;
         pre[v] = preCounter++;
         preorder.enqueue(v);
         for (int w : G.adj(v)) {
-            if (!marked[w])
-                dfs(G, w);
+            if (! marked[w]) dfs(G, w);
         }
         post[v] = postCounter++;
         postorder.enqueue(v);
@@ -69,58 +68,63 @@ public class DepthFirstOrder {
 
     /**
      * 返回结点v先序的排名
+     *
      * @param v 结点v
      * @return 结点v先序的排名
      */
-    public int pre(int v){
+    public int pre(int v) {
         validateVertex(v);
         return pre[v];
     }
 
     /**
      * 返回结点v后序的排名
+     *
      * @param v 结点v
      * @return 结点v后序的排名
      */
-    public int post(int v){
+    public int post(int v) {
         validateVertex(v);
         return post[v];
     }
 
     /**
      * 返回先序排序
+     *
      * @return 先序排序
      */
-    public Iterable<Integer> pre(){
+    public Iterable<Integer> pre() {
         return preorder;
     }
 
     /**
      * 返回后序排序
+     *
      * @return 后序排序
      */
-    public Iterable<Integer> post(){
+    public Iterable<Integer> post() {
         return postorder;
     }
 
     /**
      * 返回逆后序排序
+     *
      * @return 逆后序排序
      */
-    public Iterable<Integer> reversePost(){
+    public Iterable<Integer> reversePost() {
         Stack<Integer> reverse = new Stack<>();
         for (int v : postorder)
             reverse.push(v);
         return reverse;
     }
 
-    private void validateVertex(int v){
+    private void validateVertex(int v) {
         int V = marked.length;
-        if (v < 0 || v >= V)
-            throw new IllegalArgumentException("vertex "+ v +" is not between 0 and " + (V-1));
+        if (v < 0 || v >= V) throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (V - 1));
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
+        // args[0]: file of graph
         In in = new In(args[0]);
         Digraph G = new Digraph(in);
 
