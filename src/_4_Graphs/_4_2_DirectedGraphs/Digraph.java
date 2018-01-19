@@ -30,6 +30,8 @@ import edu.princeton.cs.algs4.In;
  *  11: 4 12
  *  12: 9
  *
+ *
+ * 有向图
  ******************************************************************************/
 public class Digraph {
     private static final String NEWLINE = System.getProperty("line.separator");

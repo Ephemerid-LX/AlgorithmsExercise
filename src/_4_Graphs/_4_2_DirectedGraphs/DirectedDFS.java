@@ -25,6 +25,7 @@ import edu.princeton.cs.algs4.StdOut;
  *  % java DirectedDFS tinyDG.txt 1 2 6
  *  0 1 2 3 4 5 6 8 9 10 11 12
  *
+ * 单点可达性
  ******************************************************************************/
 public class DirectedDFS {
     private boolean[] marked;

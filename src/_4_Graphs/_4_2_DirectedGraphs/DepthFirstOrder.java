@@ -35,6 +35,7 @@ import edu.princeton.cs.algs4.Digraph;
  *  Postorder: 4 5 1 12 11 10 9 6 0 3 2 7 8
  *  Reverse postorder: 8 7 2 3 0 6 9 10 11 12 1 5 4
  *
+ * 深度优先的顶点排序：中序，后序，逆后序
  ******************************************************************************/
 public class DepthFirstOrder {
     private boolean[] marked;

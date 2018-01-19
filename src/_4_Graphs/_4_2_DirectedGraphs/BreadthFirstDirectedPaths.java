@@ -30,6 +30,7 @@ import java.util.Iterator;
  *  3 to 11 (-):  not connected
  *  3 to 12 (-):  not connected
  *
+ * 单点最短有向路径(广度有先算法)
  ******************************************************************************/
 public class BreadthFirstDirectedPaths {
 

@@ -30,6 +30,7 @@ import edu.princeton.cs.algs4.SymbolDigraph;
  *  Scientific Computing
  *  Computational Biology
  *
+ * 拓扑排序
  ******************************************************************************/
 public class Topological {
     private Iterable<Integer> order;

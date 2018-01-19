@@ -21,6 +21,7 @@ import edu.princeton.cs.algs4.StdOut;
  *  %  java DirectedCycle tinyDAG.txt
  *  No directed cycle
  *
+ * 有向环检测
  ******************************************************************************/
 public class DirectedCycle {
     private boolean[] marked;
