@@ -53,7 +53,7 @@ public class Stack<Item> implements Iterable<Item> {
 
     @Override
     public Iterator<Item> iterator() {
-        return null;
+        return new ListIterator();
     }
 
     private class ListIterator implements Iterator<Item> {
@@ -61,12 +61,12 @@ public class Stack<Item> implements Iterable<Item> {
 
         @Override
         public boolean hasNext() {
-            return first == null;
+            return current != null;
         }
 
         @Override
         public Item next() {
-            if (isEmpty()) throw new NoSuchElementException();
+            if (!hasNext()) throw new NoSuchElementException();
             Item item = current.item;
             current = current.next;
             return item;
