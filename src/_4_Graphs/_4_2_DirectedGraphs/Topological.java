@@ -1,5 +1,6 @@
 package _4_Graphs._4_2_DirectedGraphs;
 
+import _4_Graphs._4_4_ShortestPaths.EdgeWeightedDigraph;
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.SymbolDigraph;
@@ -38,14 +39,23 @@ public class Topological {
 
     public Topological(Digraph G) {
         DirectedCycle finder = new DirectedCycle(G);
-        if (! finder.hasCycle()) {
+        if(!finder.hasCycle()) {
             DepthFirstOrder dfs = new DepthFirstOrder(G);
             order = dfs.reversePost();
             rank = new int[G.V()];
             int i = 0;
-            for (int v : order) {
+            for(int v : order) {
                 rank[v] = i++;
             }
+        }
+    }
+
+    // 加权有向图的拓扑排序
+    public Topological(EdgeWeightedDigraph G) {
+        EdgeWeightedDirectedCycle finder = new EdgeWeightedDirectedCycle(G);
+        if(!finder.hasCycle()) {
+            DepthFirstOrder dfs = new DepthFirstOrder(G);
+            order = dfs.reversePost();
         }
     }
 
@@ -80,7 +90,7 @@ public class Topological {
 
     private void validateVertex(int v) {
         int V = rank.length;
-        if (v < 0 || v >= V) throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (V - 1));
+        if(v < 0 || v >= V) throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (V - 1));
     }
 
     public static void main(String[] args) {
@@ -89,7 +99,7 @@ public class Topological {
 
         SymbolDigraph sg = new SymbolDigraph(filename, delimiter);
         Topological topological = new Topological(sg.digraph());
-        for (int v : topological.order)
+        for(int v : topological.order)
             StdOut.println(sg.nameOf(v));
     }
 }

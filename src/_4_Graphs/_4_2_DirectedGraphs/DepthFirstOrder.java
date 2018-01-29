@@ -1,5 +1,7 @@
 package _4_Graphs._4_2_DirectedGraphs;
 
+import _4_Graphs._4_4_ShortestPaths.DirectedEdge;
+import _4_Graphs._4_4_ShortestPaths.EdgeWeightedDigraph;
 import edu.princeton.cs.algs4.*;
 import edu.princeton.cs.algs4.Digraph;
 
@@ -52,19 +54,48 @@ public class DepthFirstOrder {
         preorder = new Queue<>();
         postorder = new Queue<>();
         marked = new boolean[G.V()];
-        for (int v = 0; v < G.V(); v++)
-            if (! marked[v]) dfs(G, v);
+        for(int v = 0; v < G.V(); v++)
+            if(!marked[v]) dfs(G, v);
+    }
+
+    public DepthFirstOrder(EdgeWeightedDigraph G) {
+        pre = new int[G.V()];
+        post = new int[G.V()];
+        preorder = new Queue<>();
+        preorder = new Queue<>();
+        marked = new boolean[G.V()];
+        for(int v = 0; v < G.V(); v++) {
+            if(!marked[v]) dfs(G, v);
+        }
     }
 
     private void dfs(Digraph G, int v) {
         marked[v] = true;
         pre[v] = preCounter++;
         preorder.enqueue(v);
-        for (int w : G.adj(v)) {
-            if (! marked[w]) dfs(G, w);
+        for(int w : G.adj(v)) {
+            if(!marked[w]) dfs(G, w);
         }
         post[v] = postCounter++;
         postorder.enqueue(v);
+    }
+
+    /**
+     * 构建加权有向图的排序
+     *
+     * @param G 加权有向图
+     * @param v 结点
+     */
+    private void dfs(EdgeWeightedDigraph G, int v) {
+        marked[v] = true;
+        preorder.enqueue(v);
+        pre[v] = preCounter++;
+        for(DirectedEdge e : G.adj(v)) {
+            int w = e.to();
+            if(!marked[w]) dfs(G, w);
+        }
+        postorder.enqueue(v);
+        post[v] = postCounter++;
     }
 
     /**
@@ -114,14 +145,14 @@ public class DepthFirstOrder {
      */
     public Iterable<Integer> reversePost() {
         Stack<Integer> reverse = new Stack<>();
-        for (int v : postorder)
+        for(int v : postorder)
             reverse.push(v);
         return reverse;
     }
 
     private void validateVertex(int v) {
         int V = marked.length;
-        if (v < 0 || v >= V) throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (V - 1));
+        if(v < 0 || v >= V) throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (V - 1));
     }
 
     public static void main(String[] args) {
@@ -132,24 +163,24 @@ public class DepthFirstOrder {
         DepthFirstOrder dfs = new DepthFirstOrder(G);
         StdOut.println("   v  pre post");
         StdOut.println("--------------");
-        for (int v = 0; v < G.V(); v++) {
+        for(int v = 0; v < G.V(); v++) {
             StdOut.printf("%4d %4d %4d\n", v, dfs.pre(v), dfs.post(v));
         }
 
         StdOut.print("Preorder:  ");
-        for (int v : dfs.pre()) {
+        for(int v : dfs.pre()) {
             StdOut.print(v + " ");
         }
         StdOut.println();
 
         StdOut.print("Postorder: ");
-        for (int v : dfs.post()) {
+        for(int v : dfs.post()) {
             StdOut.print(v + " ");
         }
         StdOut.println();
 
         StdOut.print("Reverse postorder: ");
-        for (int v : dfs.reversePost()) {
+        for(int v : dfs.reversePost()) {
             StdOut.print(v + " ");
         }
         StdOut.println();
