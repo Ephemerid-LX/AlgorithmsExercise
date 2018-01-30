@@ -91,7 +91,7 @@ public class AcyclicSP {
     public Iterable<DirectedEdge> pathTo(int v) {
         validateVertex(v);
         Stack<DirectedEdge> path = new Stack<>();
-        if(!hasPathTo(v)) {
+        if(hasPathTo(v)) {
             for(DirectedEdge e = edgeTo[v]; e != null; e = edgeTo[e.from()]) {
                 path.push(e);
             }

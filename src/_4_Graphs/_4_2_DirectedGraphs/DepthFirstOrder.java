@@ -62,7 +62,7 @@ public class DepthFirstOrder {
         pre = new int[G.V()];
         post = new int[G.V()];
         preorder = new Queue<>();
-        preorder = new Queue<>();
+        postorder = new Queue<>();
         marked = new boolean[G.V()];
         for(int v = 0; v < G.V(); v++) {
             if(!marked[v]) dfs(G, v);

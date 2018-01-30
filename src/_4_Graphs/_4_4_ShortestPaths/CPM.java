@@ -44,12 +44,12 @@ public class CPM {
             double duration = in.readDouble();
             G.addEdge(new DirectedEdge(i, i + n, duration));
             G.addEdge(new DirectedEdge(source, i, 0.0));
-            G.addEdge(new DirectedEdge(i, sink, 0.0));
+            G.addEdge(new DirectedEdge(i + n, sink, 0.0));
 
             int m = in.readInt();
             for(int j = 0; j < m; j++) {
                 int precedent = in.readInt();
-                G.addEdge(new DirectedEdge(n + i, j, 0.0));
+                G.addEdge(new DirectedEdge(n + i, precedent, 0.0));
             }
         }
 

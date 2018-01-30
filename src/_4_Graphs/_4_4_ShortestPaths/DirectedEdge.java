@@ -53,7 +53,7 @@ public class DirectedEdge {
     }
 
     public String toString() {
-        return v + "->" + w + String.format("%5.2f", weight);
+        return v + "->" + w + String.format("%6.2f", weight);
     }
 
     public static void main(String[] args) {

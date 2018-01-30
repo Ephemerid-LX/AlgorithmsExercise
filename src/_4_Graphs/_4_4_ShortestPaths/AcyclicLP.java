@@ -38,7 +38,7 @@ public class AcyclicLP {
         validateVertex(s);
 
         for(int v = 0; v < G.V(); v++)
-            distTo[v] = Double.POSITIVE_INFINITY;
+            distTo[v] = Double.NEGATIVE_INFINITY;
         distTo[s] = 0.0;
 
         Topological topological = new Topological(G);

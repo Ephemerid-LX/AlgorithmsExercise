@@ -110,6 +110,10 @@ public class BellmanFordSP {
         EdgeWeightedDigraph spt = new EdgeWeightedDigraph(V);
         for(DirectedEdge e : edgeTo)
             if(e != null) spt.addEdge(e);
+//        for(int v =0; v < V; v++) {
+//            if(edgeTo[v] != null)
+//                spt.addEdge(edgeTo[v]);
+//        }
         EdgeWeightedDirectedCycle finder = new EdgeWeightedDirectedCycle(spt);
         cycle = finder.cycle();
     }

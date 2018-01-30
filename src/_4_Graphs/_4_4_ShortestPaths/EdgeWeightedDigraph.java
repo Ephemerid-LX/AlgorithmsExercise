@@ -60,7 +60,7 @@ public class EdgeWeightedDigraph {
      * @param in 输入流
      */
     public EdgeWeightedDigraph(In in) {
-        this.V = in.readInt();
+        this(in.readInt());
         int E = in.readInt();
         for (int i = 0; i < E; i++) {
             int v = in.readInt();

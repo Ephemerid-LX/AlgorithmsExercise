@@ -51,7 +51,7 @@ public class DijkstraSP {
 
         validateVertex(s);
 
-        for (int v = 0; v < 0; v++)
+        for (int v = 0; v < G.V(); v++)
             distTo[v] = Double.POSITIVE_INFINITY;
         distTo[s] = 0.0;
 

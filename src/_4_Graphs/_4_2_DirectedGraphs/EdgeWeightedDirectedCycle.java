@@ -27,7 +27,7 @@ public class EdgeWeightedDirectedCycle {
         onStack = new boolean[G.V()];
         edgeTo = new DirectedEdge[G.V()];
         for(int v = 0; v < G.V(); v++) {
-            if(!marked[v] && cycle != null) dfs(G, v);
+            if(!marked[v] && cycle == null) dfs(G, v);
         }
     }
 
@@ -39,21 +39,21 @@ public class EdgeWeightedDirectedCycle {
             int w = e.to();
             if(cycle != null) return;
 
-            if(!marked[w]) {
+            else if(!marked[w]) {
                 edgeTo[w] = e;
                 dfs(G, w);
             }
 
-            if(onStack[w]) {
+            else if(onStack[w]) {
                 cycle = new Stack<>();
                 DirectedEdge f;
                 for(f = e; f.from() != w; f = edgeTo[f.from()])
-                    cycle.push(e);
+                    cycle.push(f);
                 cycle.push(f);
                 return;
             }
-            onStack[v] = false;
         }
+        onStack[v] = false;
     }
 
     public boolean hasCycle() {
