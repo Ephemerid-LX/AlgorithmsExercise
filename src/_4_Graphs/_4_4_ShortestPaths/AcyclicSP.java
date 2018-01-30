@@ -6,32 +6,30 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
 /******************************************************************************
- *  Compilation:  javac AcyclicLP.java
- *  Execution:    java AcyclicP V E
+ *  Compilation:  javac AcyclicSP.java
+ *  Execution:    java AcyclicSP V E
  *  Dependencies: EdgeWeightedDigraph.java DirectedEdge.java Topological.java
  *  Data files:   https://algs4.cs.princeton.edu/44sp/tinyEWDAG.txt
  *
- *  Computes longeset paths in an edge-weighted acyclic digraph.
+ *  Computes shortest paths in an edge-weighted acyclic digraph.
  *
- *  Remark: should probably check that graph is a DAG before running
- *
- *  % java AcyclicLP tinyEWDAG.txt 5
- *  5 to 0 (2.44)  5->1  0.32   1->3  0.29   3->6  0.52   6->4  0.93   4->0  0.38
+ *  % java AcyclicSP tinyEWDAG.txt 5
+ *  5 to 0 (0.73)  5->4  0.35   4->0  0.38
  *  5 to 1 (0.32)  5->1  0.32
- *  5 to 2 (2.77)  5->1  0.32   1->3  0.29   3->6  0.52   6->4  0.93   4->7  0.37   7->2  0.34
+ *  5 to 2 (0.62)  5->7  0.28   7->2  0.34
  *  5 to 3 (0.61)  5->1  0.32   1->3  0.29
- *  5 to 4 (2.06)  5->1  0.32   1->3  0.29   3->6  0.52   6->4  0.93
+ *  5 to 4 (0.35)  5->4  0.35
  *  5 to 5 (0.00)
  *  5 to 6 (1.13)  5->1  0.32   1->3  0.29   3->6  0.52
- *  5 to 7 (2.43)  5->1  0.32   1->3  0.29   3->6  0.52   6->4  0.93   4->7  0.37
+ *  5 to 7 (0.28)  5->7  0.28
  *
- * 无环加权有向图的改良Dijkstra算法:最长路径
+ *  无环加权有向图的改良Dijkstra算法:最短路径
  ******************************************************************************/
-public class AcyclicLP {
+public class AcyclicSP {
     private double[] distTo;
     private DirectedEdge[] edgeTo;
 
-    public AcyclicLP(EdgeWeightedDigraph G, int s) {
+    public AcyclicSP(EdgeWeightedDigraph G, int s) {
         distTo = new double[G.V()];
         edgeTo = new DirectedEdge[G.V()];
 
@@ -39,22 +37,20 @@ public class AcyclicLP {
 
         for(int v = 0; v < G.V(); v++)
             distTo[v] = Double.POSITIVE_INFINITY;
-        distTo[s] = 0.0;
+        distTo[s] = 0;
 
         Topological topological = new Topological(G);
         if(!topological.hasOrder())
             throw new IllegalArgumentException("Digraph is not acyclic");
-        for(int v : topological.order()) {
-            for(DirectedEdge e : G.adj(v)) {
+
+        for(int v : topological.order())
+            for(DirectedEdge e : G.adj(v))
                 relax(e);
-            }
-        }
     }
 
-    // 放松边
     private void relax(DirectedEdge e) {
         int v = e.from(), w = e.to();
-        if(distTo[w] < distTo[v] + e.weight()) {
+        if(distTo[w] > distTo[v] + e.weight()) {
             distTo[w] = distTo[v] + e.weight();
             edgeTo[w] = e;
         }
@@ -66,27 +62,39 @@ public class AcyclicLP {
     }
 
     /**
-     * 返回达到指定结点v的权重
+     * 是否有到达指定结点v的路径
      *
      * @param v 指定结点v
-     * @return 到达结点v的权重
+     * @return 有:true; 否则:false
      */
-    public double distTo(int v) {
-        validateVertex(v);
-        return distTo[v];
-    }
-
     public boolean hasPathTo(int v) {
         validateVertex(v);
         return distTo[v] != Double.POSITIVE_INFINITY;
     }
 
+    /**
+     * 返回到达指定结点v的权重
+     *
+     * @param v 指定结点v
+     * @return 指定结点的权重
+     */
+    public double distTo(int v) {
+        return distTo[v];
+    }
+
+    /**
+     * 返回到达指定结点v的路径
+     *
+     * @param v 指定结点v
+     * @return 到达v的路径
+     */
     public Iterable<DirectedEdge> pathTo(int v) {
         validateVertex(v);
-        if(!hasPathTo(v)) return null;
         Stack<DirectedEdge> path = new Stack<>();
-        for(DirectedEdge e = edgeTo[v]; e != null; e = edgeTo[e.from()]) {
-            path.push(e);
+        if(!hasPathTo(v)) {
+            for(DirectedEdge e = edgeTo[v]; e != null; e = edgeTo[e.from()]) {
+                path.push(e);
+            }
         }
         return path;
     }
@@ -96,12 +104,12 @@ public class AcyclicLP {
         int s = Integer.parseInt(args[1]);
         EdgeWeightedDigraph G = new EdgeWeightedDigraph(in);
 
-        AcyclicLP lp = new AcyclicLP(G, s);
-
+        // find shortest path from s to each other vertex in DAG
+        AcyclicSP sp = new AcyclicSP(G, s);
         for(int v = 0; v < G.V(); v++) {
-            if(lp.hasPathTo(v)) {
-                StdOut.printf("%d to %d (%.2f)  ", s, v, lp.distTo(v));
-                for(DirectedEdge e : lp.pathTo(v)) {
+            if(sp.hasPathTo(v)) {
+                StdOut.printf("%d to %d (%.2f)  ", s, v, sp.distTo(v));
+                for(DirectedEdge e : sp.pathTo(v)) {
                     StdOut.print(e + "   ");
                 }
                 StdOut.println();
