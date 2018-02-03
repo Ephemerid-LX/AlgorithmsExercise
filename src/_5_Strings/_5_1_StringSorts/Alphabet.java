@@ -1,4 +1,4 @@
-package _4_Graphs._5_Strings;
+package _5_Strings._5_1_StringSorts;
 
 import edu.princeton.cs.algs4.StdOut;
 
