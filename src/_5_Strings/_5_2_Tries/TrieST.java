@@ -1,6 +1,8 @@
 package _5_Strings._5_2_Tries;
 
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.StdOut;
 
 
 /******************************************************************************
@@ -50,9 +52,9 @@ public class TrieST<Value> {
 
     private Node get(Node x, String key, int d) {
         //退出条件:没有下一个结点
-        if(x.next == null) return null;
+        if(x == null) return null;
         //退出条件:查询了每一个字符
-        if(d == key.length() - 1) return x;
+        if(d == key.length()) return x;
 
         char c = key.charAt(d);
         return get(x.next[c], key, d + 1);
@@ -72,27 +74,28 @@ public class TrieST<Value> {
     /**
      * 插入
      *
-     * @param key   key
+     * @param key key
      * @param value value
      */
     public void put(String key, Value value) {
         if(key == null) throw new IllegalArgumentException("The first argument to put() is null.");
-        if(value == null) throw new IllegalArgumentException("The second argument to put() is null.");
-        put(root, key, value, 0);
+        if(value == null) delete(key);
+        else root = put(root, key, value, 0);
     }
 
-    private void put(Node x, String key, Value value, int d) {
+    private Node put(Node x, String key, Value value, int d) {
         // 如果该结点为空，则创建该结点，继续
         if(x == null) x = new Node();
         // 检查到最后一个结点，val为空，则设置并返回
-        if(d == key.length() - 1) {
+        if(d == key.length()) {
             if(x.val == null) n++;
             x.val = value;
-            return;
+            return x;
         }
-        // 没有检查到最后一个结点，继续
+        // 没有检查到最后|一个结点，继续
         char c = key.charAt(d);
-        put(x.next[c], key, value, d + 1);
+        x.next[c] = put(x.next[c], key, value, d + 1);
+        return x;
     }
 
     public int size() {
@@ -126,21 +129,20 @@ public class TrieST<Value> {
     }
 
     private void collect(Node x, StringBuilder prefix, Queue<String> results) {
-        Node next;
-        for(char i = 0; i < R; i++) {
-            next = x.next[i];
-            if(next != null && next.val != null) {
-                prefix.append(i);
-                results.enqueue(prefix.toString());
-                collect(next, prefix, results);
-                prefix.deleteCharAt(prefix.length() - 1);
-            }
-            next = null;
-        }
+                Node next;
+                for(char i = 0; i < R; i++) {
+                    next = x.next[i];
+                    if(next != null) {
+                        prefix.append(i);
+                        if(next.val != null) results.enqueue(prefix.toString());
+                        collect(next, prefix, results);
+                        prefix.deleteCharAt(prefix.length() - 1);
+                    }
+                }
 
-//        if (x == null) return;
-//        if (x.val != null) results.enqueue(prefix.toString());
-//        for (char c = 0; c < R; c++) {
+//        if(x == null) return;
+//        if(x.val != null) results.enqueue(prefix.toString());
+//        for(char c = 0; c < R; c++) {
 //            prefix.append(c);
 //            collect(x.next[c], prefix, results);
 //            prefix.deleteCharAt(prefix.length() - 1);
@@ -153,7 +155,7 @@ public class TrieST<Value> {
      * @param pattern 指定字符串
      * @return 能够匹配指定字符的键
      */
-    public Iterable keysThatMatch(String pattern) {
+    public Iterable<String> keysThatMatch(String pattern) {
         Queue<String> results = new Queue<>();
         collect(root, new StringBuilder(), pattern, results);
         return results;
@@ -162,13 +164,12 @@ public class TrieST<Value> {
     private void collect(Node x, StringBuilder prefix, String pattern, Queue<String> results) {
         if(x == null) return;
         int d = prefix.length();
-        if(d == pattern.length() && x.val != null)
-            results.enqueue(prefix.toString());
+        if(d == pattern.length() && x.val != null) results.enqueue(prefix.toString());
         if(d == pattern.length()) return;
 
         char c = pattern.charAt(d);
         // "." 匹配next的所有结点
-        if(".".equals(c)) {
+        if(c == '.') {
             for(char i = 0; i < R; i++) {
                 prefix.append(i);
                 collect(x.next[i], prefix, pattern, results);
@@ -178,8 +179,8 @@ public class TrieST<Value> {
             // 匹配指定结点
             prefix.append(c);
             collect(x.next[c], prefix, pattern, results);
-            //没有必要
-//            prefix.deleteCharAt(prefix.length() - 1);
+            //todo:为什么最后要删除最后一个字符
+            prefix.deleteCharAt(prefix.length() - 1);
         }
     }
 
@@ -217,21 +218,62 @@ public class TrieST<Value> {
 
     private Node delete(Node x, String key, int d) {
         if(x == null) return null;
-        if(d == key.length() - 1) {
+        if(d == key.length()) {
             if(x.val != null) n--;
             x.val = null;
         } else {
             char c = key.charAt(d);
-            x = delete(x.next[c], key, d + 1);
+            x.next[c] = delete(x.next[c], key, d + 1);
         }
 
+        if(x.val != null) return x;
         for(char i = 0; i < R; i++) {
             if(x.next[i] != null) return x;
         }
         return null;
     }
 
-    public void main(String[] args) {
+    public static void main(String[] args) {
+        In in = new In(args[0]);
+        TrieST<Integer> st = new TrieST<>();
+        for(int i = 0; !in.isEmpty(); i++)
+            st.put(in.readString(), i);
 
+        for(String key : st.keys())
+            StdOut.println(key + " : " + st.get(key));
+        StdOut.println();
+
+        StdOut.println("size : " + st.size());
+        StdOut.println();
+
+        StdOut.println("longestPrefix(\"shellsort\"):");
+        StdOut.println(st.longestPrefixOf("shellsort"));
+        StdOut.println();
+
+        StdOut.println("longestPrefix(\"quicksort\"):");
+        StdOut.println(st.longestPrefixOf("quicksort"));
+        StdOut.println();
+
+        StdOut.println("keysWithPrefix(\"shor\"):");
+        for(String key : st.keyWithPrefix("shor")) {
+            StdOut.println(key);
+        }
+        StdOut.println();
+
+        StdOut.println("keysThatMatch(\".he.l.\"):");
+        for(String key : st.keysThatMatch(".he.l.")) {
+            StdOut.println(key);
+        }
+        StdOut.println();
+
+        st.delete("shells");
+        st.delete("the");
+        st.delete("by");
+        for(String key : st.keys()) {
+            StdOut.println(key + " : " + st.get(key));
+        }
+        StdOut.println();
+
+        StdOut.println("size : " + st.size());
     }
 }
