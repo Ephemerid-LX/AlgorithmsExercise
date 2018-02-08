@@ -129,16 +129,16 @@ public class TrieST<Value> {
     }
 
     private void collect(Node x, StringBuilder prefix, Queue<String> results) {
-                Node next;
-                for(char i = 0; i < R; i++) {
-                    next = x.next[i];
-                    if(next != null) {
-                        prefix.append(i);
-                        if(next.val != null) results.enqueue(prefix.toString());
-                        collect(next, prefix, results);
-                        prefix.deleteCharAt(prefix.length() - 1);
-                    }
-                }
+        Node next;
+        for(char i = 0; i < R; i++) {
+            next = x.next[i];
+            if(next != null) {
+                prefix.append(i);
+                if(next.val != null) results.enqueue(prefix.toString());
+                collect(next, prefix, results);
+                prefix.deleteCharAt(prefix.length() - 1);
+            }
+        }
 
 //        if(x == null) return;
 //        if(x.val != null) results.enqueue(prefix.toString());
@@ -179,7 +179,6 @@ public class TrieST<Value> {
             // 匹配指定结点
             prefix.append(c);
             collect(x.next[c], prefix, pattern, results);
-            //todo:为什么最后要删除最后一个字符
             prefix.deleteCharAt(prefix.length() - 1);
         }
     }
