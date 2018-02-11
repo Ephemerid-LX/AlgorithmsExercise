@@ -40,7 +40,7 @@ public class Brute {
     public static int search1(String pat, String txt) {
         int m = pat.length(), n = txt.length();
 
-        for(int i = 0; i < n - m; i++) {
+        for(int i = 0; i <= n - m; i++) {
 
             int j;
             for(j = 0; j < m; j++) {
