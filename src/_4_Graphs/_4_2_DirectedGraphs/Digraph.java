@@ -143,7 +143,7 @@ public class Digraph {
     }
 
     // 添加边
-    private void addEdge(int v, int w) {
+    public void addEdge(int v, int w) {
         validateVertex(v);
         validateVertex(w);
         adj[v].add(w);
