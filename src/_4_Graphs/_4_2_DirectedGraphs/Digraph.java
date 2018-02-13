@@ -50,6 +50,8 @@ public class Digraph {
         if (V < 0) throw new IllegalArgumentException("Number of vertices in a Digraph must be nonnegative");
         this.V = V;
         this.E = 0;
+        this.indegree = new int[V];
+
         adj = (Bag<Integer>[]) new Bag[this.V];
         for (int i = 0; i < this.V; i++) {
             adj[i] = new Bag<>();
